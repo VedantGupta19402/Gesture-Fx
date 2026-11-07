@@ -140,39 +140,21 @@ class GeometryVault:
             u2 = 2.0 * math.pi * (i + 1) / rings
             cos_u1, sin_u1 = math.cos(u1), math.sin(u1)
             cos_u2, sin_u2 = math.cos(u2), math.sin(u2)
-
             for j in range(sides):
-                v1 = 2.0 * math.pi * j / sides
-                v2 = 2.0 * math.pi * (j + 1) / sides
-                cos_v1, sin_v1 = math.cos(v1), math.sin(v1)
-                cos_v2, sin_v2 = math.cos(v2), math.sin(v2)
-
-                # Point (i, j)
-                p0 = np.array([
-                    (major_radius + minor_radius * cos_v1) * cos_u1,
-                    (major_radius + minor_radius * cos_v1) * sin_u1,
-                    minor_radius * sin_v1
-                ], dtype=np.float32)
-
-                # Point (i+1, j)
-                p1 = np.array([
-                    (major_radius + minor_radius * cos_v1) * cos_u2,
-                    (major_radius + minor_radius * cos_v1) * sin_u2,
-                    minor_radius * sin_v1
-                ], dtype=np.float32)
-
-                # Point (i, j+1)
-                p2 = np.array([
-                    (major_radius + minor_radius * cos_v2) * cos_u1,
-                    (major_radius + minor_radius * cos_v2) * sin_u1,
-                    minor_radius * sin_v2
-                ], dtype=np.float32)
-
-                glVertex3f(p0[0], p0[1], p0[2])
-                glVertex3f(p1[0], p1[1], p1[2])
-                glVertex3f(p0[0], p0[1], p0[2])
-                glVertex3f(p2[0], p2[1], p2[2])
+                v = 2.0 * math.pi * j / sides
+                cos_v, sin_v = math.cos(v), math.sin(v)
+                r_maj = 1.0
+                r_min = 0.14
+                p0_x = (r_maj + r_min * cos_v) * cos_u1
+                p0_y = (r_maj + r_min * cos_v) * sin_u1
+                p0_z = r_min * sin_v
+                p1_x = (r_maj + r_min * cos_v) * cos_u2
+                p1_y = (r_maj + r_min * cos_v) * sin_u2
+                p1_z = r_min * sin_v
+                glVertex3f(p0_x, p0_y, p0_z)
+                glVertex3f(p1_x, p1_y, p1_z)
         glEnd()
+        glEndList()
 
     def draw_orbital_ring(self, radius=5.0, segments=64, tick_count=16):
         """Draws a smooth circular orbital track with scientific calibration tick marks."""
