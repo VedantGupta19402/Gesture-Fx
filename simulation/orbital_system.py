@@ -123,14 +123,12 @@ class OrbitalBody:
 
         r = (self.base_radius * field_scale) * (1.0 - ecc * ecc) / (1.0 + ecc * math.cos(self.theta))
         if mode == settings.MODE_SINGULARITY:
-            # Gravitational collapse towards central focal point
-            r = max(0.4, r * 0.28)
+            r = max(0.42, r * 0.26)
 
-        # 4. Compute 3D Coordinates via Inclined Orbital Planes
-        self.wobble_seed += dt * 0.8
-        wobble_y = math.sin(self.wobble_seed + self.theta) * 0.12
+        # 4. Inclined Orbital Coordinates
+        self.wobble_seed += dt * 0.85
+        wobble_y = math.sin(self.wobble_seed + self.theta) * 0.14
 
-        # Orbital plane coordinates before inclination
         x_plane = r * math.cos(self.theta)
         y_plane = wobble_y
         z_plane = r * math.sin(self.theta)
