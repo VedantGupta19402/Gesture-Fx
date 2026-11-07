@@ -114,7 +114,6 @@ class TelemetryHUD:
         glEnd()
 
     def _draw_hand_reticles(self, hands_dict):
-        """Draws screen-space lock reticles at detected hand coordinates."""
         glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.6)
         glLineWidth(1.2)
 
@@ -122,7 +121,6 @@ class TelemetryHUD:
             if not hand.is_present or hand.raw_landmarks is None:
                 continue
 
-            # Wrist/Palm screen coords
             wrist_norm = hand.raw_landmarks.landmark[0]
             sx = wrist_norm.x * self.width
             sy = wrist_norm.y * self.height
@@ -134,7 +132,6 @@ class TelemetryHUD:
                 glVertex2f(sx + r * math.cos(ang), sy + r * math.sin(ang))
             glEnd()
 
-            # Target tick lines
             t_len = 8.0
             glBegin(GL_LINES)
             glVertex2f(sx - r - t_len, sy); glVertex2f(sx - r + 2, sy)
