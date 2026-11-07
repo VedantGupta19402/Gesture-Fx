@@ -133,12 +133,12 @@ class OrbitalBody:
         y_plane = wobble_y
         z_plane = r * math.sin(self.theta)
 
-        # Apply pitch rotation (inclination_x around X axis)
+        # Pitch tilt around X axis
         cos_ix, sin_ix = math.cos(self.inclination_x), math.sin(self.inclination_x)
         y_rot1 = y_plane * cos_ix - z_plane * sin_ix
         z_rot1 = y_plane * sin_ix + z_plane * cos_ix
 
-        # Apply roll rotation (inclination_z around Z axis)
+        # Roll tilt around Z axis
         cos_iz, sin_iz = math.cos(self.inclination_z), math.sin(self.inclination_z)
         x_rot2 = x_plane * cos_iz - y_rot1 * sin_iz
         y_rot2 = x_plane * sin_iz + y_rot1 * cos_iz
@@ -146,26 +146,43 @@ class OrbitalBody:
 
         raw_pos = center_pos + np.array([x_rot2, y_rot2, z_rot2], dtype=np.float32)
 
-        # 5. Handle Gestural Perturbation & Interaction
-        if hand_interact_pos is not None:
-            dist_to_hand = np.linalg.norm(raw_pos - hand_interact_pos)
+        # 5. Gravitational Lensing / Singularity Curvature
+        # Deflect orbital trajectory inwards near the event horizon
+        disp_sing = center_pos - raw_pos
+        dist_sing = float(np.linalg.norm(disp_sing)) + 0.01
+        if dist_sing < 3.2:
+            lens_pull = (disp_sing / dist_sing) * (settings.LENSING_STRENGTH * 0.12 / (dist_sing * dist_sing + 0.2))
+            raw_pos += lens_pull
 
-            # Fist Gesture: Gravitational suction
-            if hand_gesture == settings.GESTURE_CLOSED_FIST:
-                pull_vector = (hand_interact_pos - raw_pos)
-                if dist_to_hand > 0.3:
-                    pull_factor = min(1.0, 1.8 / (dist_to_hand + 0.1))
-                    raw_pos += pull_vector * pull_factor * 0.45
+        # 6. Post-Fling Momentum Dissipation
+        if self.is_flung:
+            raw_pos += self.linear_velocity * dt
+            self.linear_velocity *= (self.fling_damping ** (dt * 60.0))
+            if np.linalg.norm(self.linear_velocity) < 0.1:
+                self.is_flung = False
 
-            # Pinch Gesture: Grab nearest body
-            elif hand_gesture == settings.GESTURE_PINCH:
-                if dist_to_hand < 1.4 or self.grabbed:
-                    self.grabbed = True
-                    raw_pos = hand_interact_pos.copy()
-            else:
-                self.grabbed = False
+        # 7. Spatial Warp Perturbation from Active Hands
+        if warp_fields:
+            for wf in warp_fields:
+                w_pos = wf["pos"]
+                w_vel = wf["velocity"]
+                w_rad = wf["radius"]
+                disp_w = raw_pos - w_pos
+                dist_w = float(np.linalg.norm(disp_w)) + 0.01
 
-        # 6. Disintegration / Reformation Kinematics
+                if dist_w < w_rad:
+                    # Fluid displacement along hand velocity vector and outward push
+                    push_factor = (1.0 - (dist_w / w_rad)) * wf["intensity"] * 0.4
+                    norm_disp = disp_w / dist_w
+                    raw_pos += norm_disp * push_factor + w_vel * (dt * 0.35)
+
+        # 8. Fist Gravitational Attraction
+        if hand_gesture == settings.GESTURE_CLOSED_FIST:
+            pull_vec = center_pos - raw_pos
+            d_pull = float(np.linalg.norm(pull_vec)) + 0.01
+            raw_pos += (pull_vec / d_pull) * min(1.2, 2.2 / (d_pull + 0.3)) * (dt * 3.5)
+
+        # 9. Disintegration / Reformation Kinematics
         if mode == settings.MODE_CHAOS:
             # Structures break apart into chaotic orbits
             if np.linalg.norm(self.disintegration_target) < 0.1:
