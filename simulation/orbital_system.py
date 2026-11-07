@@ -36,13 +36,20 @@ class OrbitalBody:
         # World Spatial Coordinates & Trails
         self.world_pos = np.zeros(3, dtype=np.float32)
         self.trail = []
-        self.max_trail_len = 18 if layer_name == "INNER" else (24 if layer_name == "MIDDLE" else 30)
+        self.max_trail_len = 22 if layer_name == "INNER" else (28 if layer_name == "MIDDLE" else 36)
         
+        # Pinch, Grab & Launch Kinetics
+        self.is_grabbed = False
+        self.grabbed_hand_label = None
+        self.charge_level = 0.0
+        self.linear_velocity = np.zeros(3, dtype=np.float32)
+        self.is_flung = False
+        self.fling_damping = 0.98
+
         # Disintegration & Organic perturbation state
         self.disintegration_offset = np.zeros(3, dtype=np.float32)
         self.disintegration_target = np.zeros(3, dtype=np.float32)
         self.wobble_seed = random.uniform(0.0, 100.0)
-        self.grabbed = False
 
     def update(self, dt, center_pos, field_scale=1.0, mode=settings.MODE_ORBITAL, hand_interact_pos=None, hand_gesture=settings.GESTURE_NONE):
         # 1. Update Orbital Phase Angle
