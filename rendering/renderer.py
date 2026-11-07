@@ -174,22 +174,38 @@ class MasterRenderer:
             self.geometry.draw_warp_bubble(radius=warp_r, intensity=hand.warp_intensity)
             glPopMatrix()
 
-    def render_motion_trails(self, orbital_system):
-        """Renders persistent fading trails behind orbiting celestial objects."""
-        self.materials.set_additive_glow()
-        glLineWidth(1.2)
+            # 4. Energized Tether when an Orbital Object is Grabbed
+            if grabbed_body and grabbed_body.is_grabbed and grabbed_body.grabbed_hand_label == label:
+                glLineWidth(2.4)
+                self.geometry.draw_energy_beam(
+                    hand.pinch_world_pos,
+                    grabbed_body.world_pos,
+                    color=settings.COLOR_WHITE,
+                    jitter=0.08
+                )
 
-        for body in orbital_system.bodies:
-            trail_len = len(body.trail)
-            if trail_len < 2:
-                continue
+    def render_advanced_energy_core(self, center_pos, effects_mgr, field_intensity=0.5):
+        """
+        Renders the multi-layered Advanced Energy Core:
+        - Layer 1: Event Horizon Shadow + Razor Photon Ring
+        - Layer 2: Relativistic Accretion Disk with Keplerian rotation & Doppler beaming
+        - Layer 3: Dual Counter-Rotating Icosahedrons
+        - Layer 4: Orthogonal Gimbal Torus Rings
+        - Layer 5: Pulsating Geodesic Energy Shells
+        """
+        pulse = 1.0 + 0.16 * math.sin(effects_mgr.pulse_phase)
+        core_scale = (0.55 + 0.25 * field_intensity) * pulse
 
-            glBegin(GL_LINE_STRIP)
-            for idx, pos in enumerate(body.trail):
-                alpha_factor = (idx / trail_len) * 0.45
-                glColor4f(body.color[0], body.color[1], body.color[2], alpha_factor)
-                glVertex3fv(pos)
-            glEnd()
+        glPushMatrix()
+        glTranslatef(center_pos[0], center_pos[1], center_pos[2])
+
+        # -------------------------------------------------------------
+        # LAYER 1: VIRTUAL SINGULARITY (Dark Event Horizon & Photon Halo)
+        # -------------------------------------------------------------
+        # A. Dark Event Horizon Sphere (Absorptive silence)
+        self.materials.set_standard_alpha()
+        glColor4fv(settings.COLOR_SINGULARITY)
+        self.geometry.draw_event_horizon(radius=settings.EVENT_HORIZON_RADIUS * core_scale)
 
     def render_energy_core(self, center_pos, effects_mgr, field_intensity=0.5):
         """Renders the pulsating central scientific energy core."""
