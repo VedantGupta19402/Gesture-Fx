@@ -232,13 +232,15 @@ class PhantomApplication:
         self.renderer.render_starfield()
         self.renderer.render_grid_plane(body_origin)
 
-        # 2. Hand Skeletons in 3D Space
-        self.renderer.render_hand_skeletons(hands)
+        # 2. Hand Skeletons, Spatial Warp Bubbles & Pinch Lightning Tether
+        self.renderer.render_hand_skeletons(hands, warp_fields, self.orbital_system.grabbed_body)
 
-        # 3. Celestial Orbital Mechanics
+        # 3. Celestial Orbital Dynamics & Persistent Motion Trails
         self.renderer.render_motion_trails(self.orbital_system)
-        self.renderer.render_energy_core(
-            self.orbital_system.smoothed_center,
+        
+        # 4. Advanced Multi-Layer Energy Core
+        self.renderer.render_advanced_energy_core(
+            body_origin,
             self.energy_effects,
             self.orbital_system.field_intensity
         )
