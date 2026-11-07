@@ -103,12 +103,15 @@ ACCRETION_PARTICLE_COUNT = 450
 JET_PARTICLE_COUNT = 240
 AMBIENT_DUST_COUNT = 300
 PARTICLE_POINT_SIZE = 2.4
-CORE_PULSE_SPEED = 2.5
+CORE_PULSE_SPEED = 2.8
+
+# Pinch to Launch Mechanics
+GRAB_RADIUS = 1.75                              # Proximity to lock an orbital object
+LAUNCH_SPEED_MULT = 1.8                         # Fling momentum transfer multiplier
 
 # Gesture Recognition Parameters
 PINCH_THRESHOLD = 0.065
 FIST_THRESHOLD = 0.11
-SWIPE_VELOCITY_THRESHOLD = 1.6  # World units per sec
-GESTURE_CONFIRM_FRAMES = 2      # Hysteresis buffer
-SMOOTHING_FACTOR = 0.22         # Landmark EMA factor
-
+SWIPE_VELOCITY_THRESHOLD = 1.6                  # World units per sec
+GESTURE_CONFIRM_FRAMES = 2                      # Hysteresis buffer
+SMOOTHING_FACTOR = 0.22                         # Landmark EMA factor
