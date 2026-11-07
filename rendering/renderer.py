@@ -1,7 +1,8 @@
 """
 PHANTOM: ORBITAL MODE — Holographic 3D Master Scene Renderer
-Renders orbital bodies, particle clouds, energy shockwaves, hand skeletons,
-ambient quantum starfield, and spatial coordinate grids.
+Composites the spatial distortion engine: event horizon, photon ring, relativistic
+accretion disk, counter-rotating gimbals, pulsating shells, hand warp bubbles,
+and energized lightning tethers.
 """
 
 import math
@@ -12,7 +13,6 @@ from config import settings
 from rendering.geometry import GeometryVault
 from rendering.materials import MaterialManager
 
-# MediaPipe Hand connection indices for 3D holographic skeletal visualization
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),        # Thumb
     (0, 5), (5, 6), (6, 7), (7, 8),        # Index
@@ -29,7 +29,7 @@ class MasterRenderer:
         self.geometry = GeometryVault()
         self.materials = MaterialManager()
         
-        # Camera orbit view state (controlled via left hand or subtle mouse interaction)
+        # Camera orbit view state
         self.cam_rot_x = 0.0
         self.cam_rot_y = 0.0
         self.cam_zoom = -8.5
