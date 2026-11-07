@@ -169,14 +169,15 @@ class PhantomApplication:
         self.renderer.cam_rot_y = 0.0
 
     def update_physics(self, dt):
-        # 1. Optical Hand Landmark Processing
-        ret, rgb_frame, _ = self.camera.read_frame()
-        hands = self.tracker.process_frame(rgb_frame, dt)
+        # 1. Optical Hand Landmark Processing (Thread-safe Async Pipeline)
+        hands = self.tracker.update(dt)
         
-        primary_pos, primary_gesture, primary_hand = self.tracker.get_primary_interaction_point()
+        # 2. Body-Relative Spatial Anchor & Active Warp Fields
+        body_origin, origin_mode, primary_gesture = self.tracker.get_body_relative_origin()
+        warp_fields = self.tracker.get_active_warp_fields()
         dual_gesture = self.tracker.dual_hand_gesture
 
-        # 2. Camera Orientation Adjustment via Left Hand Two-Finger Gesture
+        # 3. Camera Perspective (Two-finger gesture on Left Hand)
         left_hand = hands.get("Left")
         if left_hand and left_hand.is_present and left_hand.gesture == settings.GESTURE_TWO_FINGERS:
             # Map wrist-to-middle vector to subtle orbital scene rotation
