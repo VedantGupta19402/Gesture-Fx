@@ -193,7 +193,7 @@ class OrbitalBody:
 
         self.world_pos = raw_pos + self.disintegration_offset
 
-        # 7. Update Persistent Motion Trail
+        # 10. Update Persistent Motion Trail
         self.trail.append(self.world_pos.copy())
         if len(self.trail) > self.max_trail_len:
             self.trail.pop(0)
@@ -204,11 +204,12 @@ class OrbitalSystem:
         self.bodies = []
         self.field_scale = 1.0
         self.target_field_scale = 1.0
-        self.center_focal_pos = np.array([0.0, 0.0, -8.0], dtype=np.float32)
-        self.smoothed_center = np.array([0.0, 0.0, -8.0], dtype=np.float32)
+        self.interaction_origin = np.array(settings.RESTING_ORIGIN, dtype=np.float32)
         self.mode = settings.MODE_ORBITAL
         self.field_intensity = 0.65
         self.core_pulse_time = 0.0
+        self.accretion_time = 0.0
+        self.grabbed_body = None
         self._build_orbital_layers()
 
     def _build_orbital_layers(self):
