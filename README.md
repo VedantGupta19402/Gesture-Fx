@@ -44,18 +44,20 @@
 
 ---
 
-## Tech Stack
+## ⌨️ Mode & Command Controls
 
-| Layer | Technology |
-| --- | --- |
-| Computer vision | OpenCV, MediaPipe |
-| 3D rendering | PyOpenGL, GLU |
-| Windowing / input | Pygame |
-| Math / vectors | NumPy |
+* **`[1]` ORBITAL MODE**: Pristine geometric structures orbiting smoothly around the interaction focal point.
+* **`[2]` CHAOS MODE**: Orbital structures experience controlled instability, disintegrating into swirling particle storms.
+* **`[3]` SINGULARITY MODE**: Extreme gravitational collapse into a hyper-dense core followed by pulsing flares.
+* **`[H]` TOGGLE HUD**: Show/hide the technical telemetry heads-up display.
+* **`[R]` RESET**: Re-center and re-initialize all orbital tracks and particle buffers.
+* **`[F]` FULLSCREEN**: Toggle borderless fullscreen display.
+* **`[SPACE]` SHOCKWAVE**: Manually trigger an energy pulse from the central core.
+* **`[ESC]` EXIT**: Safely shut down OpenGL context and optical capture hardware.
 
 ---
 
-## Project Structure
+## 🛠️ Repository Architecture
 
 ```
 hand gestures/
