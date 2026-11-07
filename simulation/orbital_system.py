@@ -1,7 +1,7 @@
 """
-PHANTOM: ORBITAL MODE — 3D Celestial Orbital Physics Engine
+PHANTOM: ORBITAL MODE — 3D Celestial Orbital Physics & Spatial Distortion Engine
 Simulates tiered orbital bodies with independent inclination, eccentricity,
-spin kinematics, motion trails, and gesture-driven perturbation.
+spin kinematics, gravitational curving, and pinch-and-release mechanics.
 """
 
 import math
@@ -21,6 +21,7 @@ class OrbitalBody:
         self.scale = scale
         self.inclination_x = inclination[0]  # Pitch tilt in radians
         self.inclination_z = inclination[1]  # Roll tilt in radians
+        self.base_color = list(color)
         self.color = list(color)
         
         # Phase and Rotational Dynamics
