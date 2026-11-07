@@ -105,6 +105,6 @@ class CameraManager:
     def release(self):
         if self.cap and self.cap.isOpened():
             self.cap.release()
+            self.cap = None
             self.is_active = False
             print("[OPTICAL ENGINE] Camera released.")
-
