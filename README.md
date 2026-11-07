@@ -7,23 +7,40 @@
 
 **PHANTOM: ORBITAL MODE** transforms standard optical video capture into an interactive 3D holographic research environment. Powered by real-time computer vision and dual-pass OpenGL rendering, the system spawns tiered celestial orbits, responsive particle physics, and energy shockwaves calibrated to natural human hand dynamics.
 
-- **PHANTOM // ORBITAL MODE** — the full modular application (`main.py`) with orbital mechanics, particle physics, energy shockwaves, and a telemetry HUD.
-- **The-Sci-Fi** — the original single-file prototype (`The-Sci-Fi/mini.py`) that started it all.
+---
+
+## 🔬 System Capabilities & Visual Architecture
+
+### 1. Three-Tiered Orbital Mechanics
+* **Inner Orbit**: Agile, high-velocity geometric cores (octahedrons, tetrahedrons, cubes) closely tethered to the interaction focus.
+* **Middle Orbit**: Independent multi-axis rotating structures (nested icosahedrons, parametric wireframe cubes, torus rings).
+* **Outer Orbit**: Large celestial rings, orbital track markers, and resonant brackets with organic eccentricity and inclination tilt.
+
+### 2. High-Performance Vectorized Particle Physics
+* Over **1,600+ active particles** simulated via SIMD NumPy array buffers without per-frame Python memory allocation.
+* Supports **gravitational attraction**, **shockwave repulsion**, **turbulent curl noise**, **disintegration**, and **structural reformation**.
+
+### 3. Energy Shockwave Engine
+* Rapid gestures or manual triggers generate expanding 3D spherical wavefronts that push particles and radiate outward.
+* Central pulsating multi-layered energy core that dynamically breathes and flares based on field intensity.
+
+### 4. Scientific Telemetry HUD
+* High-precision aerospace overlay featuring real-time FPS, optical sensor resolution, active hand joint tracking, confidence scores, field intensity bar meter, and 3D coordinate readouts $(X, Y, Z)$.
+* Can be toggled on/off instantly with `[H]`.
 
 ---
 
-## Features
+## 🖐️ Gesture Control Mapping
 
-- **Hand tracking** via MediaPipe — up to two hands, 21 landmarks per hand.
-- **Gesture recognition** with temporal hysteresis:
-  - Pinch (thumb + index) to scale / manipulate the field
-  - Two-finger gesture to lock and rotate the camera
-  - Closed fist, open palm, spread / compress
-  - Fast swipe to emit an energy shockwave
-- **Three simulation modes** — Orbital, Chaos, and Singularity.
-- **GPU-friendly rendering** — additive blending, glow materials, and vectorized particle updates.
-- **Motion smoothing** — exponential moving average on landmarks plus lerp-based interpolation.
-- **Scientific telemetry HUD** — FPS, camera status, hand state, and simulation diagnostics.
+| Physical Gesture | Target Interaction | Visual Behavior |
+|:---|:---|:---|
+| **Open Palm** | Activate Orbital Field | Orbits accelerate, field intensity increases, core glows |
+| **Closed Fist** | Gravitational Singularity | Nearby bodies & particles collapse into the fist |
+| **Pinch (Thumb + Index)** | Grab & Manipulate | Locks and drags the nearest orbital body or focal node |
+| **Two Fingers Extended** | Camera Orbital Rotation | Rotates the 3D perspective along pitch and yaw |
+| **Spread Dual Hands** | Field Expansion | Increases orbital semi-major axes and layer separation |
+| **Bring Hands Together**| Field Compression | Tightens orbital radius into a dense formation |
+| **Fast Hand Swipe** | Energy Shockwave | Emits a high-velocity 3D expanding wave-front |
 
 ---
 
