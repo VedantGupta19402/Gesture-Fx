@@ -255,11 +255,10 @@ class ParticleSystem:
                 disp_sw = self.positions[:self.orbital_count] - sw.origin
                 dist_sw = np.linalg.norm(disp_sw, axis=1, keepdims=True) + 0.001
                 wave_dist = np.abs(dist_sw.flatten() - sw.radius)
-                wave_mask = wave_dist < 0.65
+                wave_mask = wave_dist < 0.70
                 if np.any(wave_mask):
                     push_dir = disp_sw[wave_mask] / dist_sw[wave_mask]
-                    impulse = push_dir * (sw.alpha * 14.0)
-                    self.velocities[wave_mask] += impulse * dt
+                    self.velocities[:self.orbital_count][wave_mask] += push_dir * (sw.alpha * 15.0) * dt
 
         # Limit maximum particle velocity to prevent teleportation
         speed = np.linalg.norm(self.velocities, axis=1, keepdims=True)
