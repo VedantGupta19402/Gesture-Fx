@@ -123,7 +123,7 @@ class HandTracker:
 
         present_labels = set()
 
-        if results.multi_hand_landmarks and results.multi_handedness:
+        if results and results.multi_hand_landmarks and results.multi_handedness:
             for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
                 label = handedness.classification[0].label
                 confidence = handedness.classification[0].score
@@ -134,7 +134,7 @@ class HandTracker:
                 tracked.confidence = confidence
                 tracked.is_present = True
 
-                # Compute smoothed world landmarks
+                # 1. Compute smoothed world landmarks
                 alpha = settings.SMOOTHING_FACTOR
                 world_pts = []
                 for i, lm in enumerate(hand_landmarks.landmark):
@@ -147,7 +147,7 @@ class HandTracker:
                         )
                     world_pts.append(tracked.smoothed_world_landmarks[i])
 
-                # Palm center computed from wrist (0), index base (5), pinky base (17)
+                # 2. Palm center computed from wrist (0), index base (5), pinky base (17)
                 palm_center = (world_pts[0] + world_pts[5] + world_pts[17]) / 3.0
                 if np.all(tracked.last_palm_center == 0):
                     tracked.last_palm_center = palm_center.copy()
