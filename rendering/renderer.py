@@ -102,15 +102,42 @@ class MasterRenderer:
         glBegin(GL_LINES)
         curr = -grid_range
         while curr <= grid_range:
-            glVertex3f(curr, y_floor, -16.0)
-            glVertex3f(curr, y_floor, 2.0)
+            # Longitudinal lines with gravitational deflection
+            for z_val in np.arange(-16.0, 2.0, 1.5):
+                z_next = z_val + 1.5
+                
+                # Point A
+                dx = curr - cx
+                dz = z_val - cz
+                d2 = dx * dx + dz * dz + 0.5
+                bend_a = settings.LENSING_STRENGTH * 0.45 / d2
+                pA_x = curr - dx * bend_a
+                pA_y = y_floor - bend_a * 0.3
+                pA_z = z_val - dz * bend_a
+
+                # Point B
+                dx_b = curr - cx
+                dz_b = z_next - cz
+                d2_b = dx_b * dx_b + dz_b * dz_b + 0.5
+                bend_b = settings.LENSING_STRENGTH * 0.45 / d2_b
+                pB_x = curr - dx_b * bend_b
+                pB_y = y_floor - bend_b * 0.3
+                pB_z = z_next - dz_b * bend_b
+
+                glVertex3f(pA_x, pA_y, pA_z)
+                glVertex3f(pB_x, pB_y, pB_z)
+
+            # Lateral lines
             glVertex3f(-grid_range, y_floor, curr - 7.0)
             glVertex3f(grid_range, y_floor, curr - 7.0)
             curr += step
         glEnd()
 
-    def render_hand_skeletons(self, hands_dict):
-        """Renders tracked hand skeletons directly into 3D world space."""
+    def render_hand_skeletons(self, hands_dict, warp_fields, grabbed_body=None):
+        """
+        Renders tracked hand skeletons, metric distortion warp bubbles,
+        and energized pinch-to-launch tether lightning.
+        """
         self.materials.set_additive_glow()
         glLineWidth(2.2)
 
@@ -122,7 +149,7 @@ class MasterRenderer:
             is_right = (label == "Right")
             node_color = settings.COLOR_CYAN if is_right else settings.COLOR_PLASMA
             
-            # Draw skeletal laser links
+            # 1. Skeletal Laser Links
             glColor4f(node_color[0], node_color[1], node_color[2], 0.65)
             glBegin(GL_LINES)
             for j1, j2 in HAND_CONNECTIONS:
