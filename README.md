@@ -1,8 +1,11 @@
-# GESTURE-FX
+# PHANTOM — ORBITAL MODE 🌌🖐️
+### Autonomous Spatial Holographic Computing System & Scientific Telemetry Interface
 
-Real-time, gesture-controlled spatial computing experiments built with **Python**, **MediaPipe**, **PyOpenGL**, and **Pygame**.
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![OpenGL](https://img.shields.io/badge/Graphics-PyOpenGL-cyan.svg)](https://pyopengl.sourceforge.net/)
+[![MediaPipe](https://img.shields.io/badge/Tracking-MediaPipe-green.svg)](https://developers.google.com/mediapipe)
 
-The project tracks hand landmarks from a webcam and maps them to a neon 3D holographic interface. It ships with two generations of the idea:
+**PHANTOM: ORBITAL MODE** transforms standard optical video capture into an interactive 3D holographic research environment. Powered by real-time computer vision and dual-pass OpenGL rendering, the system spawns tiered celestial orbits, responsive particle physics, and energy shockwaves calibrated to natural human hand dynamics.
 
 - **PHANTOM // ORBITAL MODE** — the full modular application (`main.py`) with orbital mechanics, particle physics, energy shockwaves, and a telemetry HUD.
 - **The-Sci-Fi** — the original single-file prototype (`The-Sci-Fi/mini.py`) that started it all.
