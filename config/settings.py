@@ -26,9 +26,10 @@ COLOR_BG = (0.010, 0.014, 0.024, 1.0)           # Deep Obsidian Lab Void
 COLOR_CYAN = (0.0, 0.94, 1.0, 0.90)             # Electric Cyan (Primary telemetry & energy)
 COLOR_PLASMA = (0.12, 0.45, 1.0, 0.85)          # Plasma Blue (Mid-layer orbits & Doppler receding)
 COLOR_VIOLET = (0.68, 0.18, 0.98, 0.85)         # Ultraviolet (Outer resonant structures)
-COLOR_WHITE = (0.95, 0.98, 1.0, 0.95)           # Pure Radiance (Core highlights & focal points)
-COLOR_AMBER = (1.0, 0.65, 0.15, 0.9)            # Warning / Singularity overload
-COLOR_GRID = (0.06, 0.14, 0.22, 0.18)           # Subtle Coordinate Grid
+COLOR_WHITE = (0.96, 0.99, 1.0, 0.98)           # Pure Radiance (Photon ring & core highlights)
+COLOR_AMBER = (1.0, 0.65, 0.15, 0.90)           # Warning / Singularity overload
+COLOR_GRID = (0.05, 0.12, 0.20, 0.18)           # Subtle Coordinate Grid
+COLOR_SINGULARITY = (0.003, 0.005, 0.010, 1.0)  # Event Horizon absolute shadow
 COLOR_TRAIL_FADE = 0.88                         # Trail persistence factor
 
 # Simulation Modes
@@ -45,6 +46,25 @@ GESTURE_TWO_FINGERS = "DUAL_FINGER_AXIS"
 GESTURE_SPREAD = "FIELD_EXPANSION"
 GESTURE_COMPRESS = "FIELD_COMPRESSION"
 GESTURE_SHOCKWAVE = "ENERGY_SHOCKWAVE"
+
+# Body-Relative Spatial Anchor
+ORIGIN_SMOOTHING_SPEED = 5.5                     # Exponential lerp factor
+DROPOUT_HOLD_SECONDS = 0.75                     # Coasting time when tracking drops
+RESTING_ORIGIN = (0.0, 0.0, -8.0)
+
+# Gravitational Lensing & Virtual Singularity
+LENSING_STRENGTH = 1.35                         # Trajectory bending coefficient
+EVENT_HORIZON_RADIUS = 0.36                     # Black hole dark shadow radius
+PHOTON_RING_RADIUS = 0.54                       # Intense sharp Einstein ring radius
+ACCRETION_DISK_INNER = 0.75                     # Accretion ring inner radius
+ACCRETION_DISK_OUTER = 2.45                     # Accretion ring outer boundary
+ACCRETION_DISK_TILT = 0.42                      # Radians (~24 degrees inclination)
+
+# Hand Spatial Warp Fields
+WARP_BASE_RADIUS = 1.45                         # Influence sphere radius per hand
+WARP_DISSIPATION_RATE = 4.2                     # Relaxation rate of metric distortion
+WARP_SWIRL_FACTOR = 1.85                        # Frame-dragging vortex coefficient
+WARP_VELOCITY_LIMIT = 14.0                      # Relativistic particle speed cap
 
 # Orbital System Configuration
 INNER_LAYER = {
@@ -77,9 +97,11 @@ OUTER_LAYER = {
     "types": ["orbital_ring", "icosahedron", "celestial_bracket"]
 }
 
-# Particle System
-MAX_PARTICLES = 1600
-AMBIENT_DUST_COUNT = 350
+# Particle System Configurations
+MAX_PARTICLES = 1800
+ACCRETION_PARTICLE_COUNT = 450
+JET_PARTICLE_COUNT = 240
+AMBIENT_DUST_COUNT = 300
 PARTICLE_POINT_SIZE = 2.4
 CORE_PULSE_SPEED = 2.5
 
