@@ -157,7 +157,7 @@ class MasterRenderer:
                 glVertex3fv(pts[j2])
             glEnd()
 
-            # Draw glowing landmark joint nodes
+            # 2. Glowing Landmark Nodes
             glColor4f(1.0, 1.0, 1.0, 0.95)
             for i, p in enumerate(pts):
                 glPushMatrix()
@@ -166,11 +166,12 @@ class MasterRenderer:
                 self.geometry.draw_sphere(radius=r, slices=8, stacks=8)
                 glPopMatrix()
 
-            # Interaction aura around palm center
+            # 3. 3D Spatial Warp Bubble (Distortion Field)
             glPushMatrix()
             glTranslatef(hand.palm_center_world[0], hand.palm_center_world[1], hand.palm_center_world[2])
-            glColor4f(node_color[0], node_color[1], node_color[2], 0.25)
-            self.geometry.draw_sphere(radius=0.28, slices=10, stacks=10, wireframe=True)
+            glLineWidth(1.2)
+            warp_r = settings.WARP_BASE_RADIUS * (0.8 + 0.3 * hand.warp_intensity)
+            self.geometry.draw_warp_bubble(radius=warp_r, intensity=hand.warp_intensity)
             glPopMatrix()
 
     def render_motion_trails(self, orbital_system):
