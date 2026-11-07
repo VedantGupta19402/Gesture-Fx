@@ -128,14 +128,12 @@ while True:
                     rot_x_target = (mid.y - wrist.y) * 300
                     rot_y_target = (mid.x - wrist.x) * 300
 
-    # ---------- SMOOTHING ----------
     scale = lerp(scale, scale_target)
     rot_x = lerp(rot_x, rot_x_target)
     rot_y = lerp(rot_y, rot_y_target)
 
     particles = [p * scale for p in BASE_POS]
 
-    # ---------- RENDER ----------
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glPushMatrix()
 
