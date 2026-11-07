@@ -301,15 +301,16 @@ class OrbitalSystem:
         elif dual_gesture == settings.GESTURE_COMPRESS:
             self.target_field_scale = max(0.45, self.target_field_scale - dt * 0.9)
 
-        # 3. Open Palm Field Activation: Increases speed and field intensity
-        if gesture == settings.GESTURE_OPEN_PALM:
+        # 3. Open Palm Field Activation
+        has_open_palm = any(h.is_present and h.gesture == settings.GESTURE_OPEN_PALM for h in hands_dict.values())
+        if has_open_palm:
             self.field_intensity = min(1.0, self.field_intensity + dt * 1.5)
             self.target_field_scale = min(1.35, self.target_field_scale + dt * 0.3)
         else:
-            self.field_intensity = max(0.4, self.field_intensity - dt * 0.6)
+            self.field_intensity = max(0.4, self.field_intensity - dt * 0.5)
 
         # Smooth field scale
-        self.field_scale += (self.target_field_scale - self.field_scale) * (dt * 3.0)
+        self.field_scale += (self.target_field_scale - self.field_scale) * (dt * 3.2)
 
         # 4. Update Each Orbital Body
         for body in self.bodies:
