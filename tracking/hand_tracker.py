@@ -202,13 +202,65 @@ class HandTracker:
 
         return self.hands
 
-    def get_primary_interaction_point(self):
-        """
-        Returns the primary focal point of user interaction (Right hand prioritized, then Left).
-        """
-        if self.hands["Right"].is_present:
-            return self.hands["Right"].palm_center_world, self.hands["Right"].gesture, self.hands["Right"]
-        if self.hands["Left"].is_present:
-            return self.hands["Left"].palm_center_world, self.hands["Left"].gesture, self.hands["Left"]
-        return np.array([0.0, 0.0, -8.0], dtype=np.float32), settings.GESTURE_NONE, None
+    def _update_interaction_origin(self, dt):
+        has_left = self.hands["Left"].is_present
+        has_right = self.hands["Right"].is_present
 
+        if has_left and has_right:
+            self.target_origin = (self.hands["Left"].palm_center_world + self.hands["Right"].palm_center_world) * 0.5
+            self.origin_mode = "DUAL_HAND_MIDPOINT"
+            self.tracking_loss_timer = 0.0
+
+        elif has_right:
+            self.target_origin = self.hands["Right"].palm_center_world.copy()
+            self.origin_mode = "SINGLE_HAND_RIGHT"
+            self.tracking_loss_timer = 0.0
+
+        elif has_left:
+            self.target_origin = self.hands["Left"].palm_center_world.copy()
+            self.origin_mode = "SINGLE_HAND_LEFT"
+            self.tracking_loss_timer = 0.0
+
+        else:
+            self.tracking_loss_timer += dt
+            if self.tracking_loss_timer < settings.DROPOUT_HOLD_SECONDS:
+                self.origin_mode = "COASTING"
+                self.target_origin += self.origin_velocity * (dt * 0.4)
+            else:
+                self.origin_mode = "RESTING"
+                self.target_origin = self.resting_origin.copy()
+
+        blend = 1.0 - math.exp(-settings.ORIGIN_SMOOTHING_SPEED * dt)
+        new_origin = self.current_origin + (self.target_origin - self.current_origin) * blend
+        if dt > 0.001:
+            self.origin_velocity = (new_origin - self.current_origin) / dt
+        self.current_origin = new_origin
+
+    def get_body_relative_origin(self):
+        primary_gesture = settings.GESTURE_NONE
+        if self.hands["Right"].is_present:
+            primary_gesture = self.hands["Right"].gesture
+        elif self.hands["Left"].is_present:
+            primary_gesture = self.hands["Left"].gesture
+
+        return self.current_origin, self.origin_mode, primary_gesture
+
+    def get_active_warp_fields(self):
+        fields = []
+        for label, hand in self.hands.items():
+            if hand.is_present or hand.warp_intensity > 0.05:
+                fields.append({
+                    "label": label,
+                    "pos": hand.palm_center_world.copy(),
+                    "velocity": hand.palm_velocity.copy(),
+                    "intensity": hand.warp_intensity,
+                    "radius": settings.WARP_BASE_RADIUS * (1.0 + 0.3 * hand.warp_intensity)
+                })
+        return fields
+
+    def cleanup(self):
+        self.worker_running = False
+        try:
+            self.hands_detector.close()
+        except Exception:
+            pass
