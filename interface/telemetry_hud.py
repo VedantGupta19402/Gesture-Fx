@@ -214,9 +214,9 @@ class TelemetryHUD:
                 h_gest = f"GESTURE: {hand.gesture}"
                 h_pos = f"XYZ: [{hand.palm_center_world[0]:+.2f}, {hand.palm_center_world[1]:+.2f}, {hand.palm_center_world[2]:+.2f}]"
                 h_vel = f"VELOCITY: {hand.velocity_mag:.2f} u/s"
-                h_conf = f"CONFIDENCE: {hand.confidence * 100:.1f}%"
+                h_warp = f"WARP STRAIN: {hand.warp_intensity:.2f}x"
 
-                for text_line in [h_name, h_gest, h_pos, h_vel, h_conf]:
+                for text_line in [h_name, h_gest, h_pos, h_vel, h_warp]:
                     txt_surf = self.font_main.render(text_line, True, status_color if "HAND" in text_line else white)
                     self.hud_surface.blit(txt_surf, (right_x, y_r))
                     y_r += 18
@@ -228,7 +228,7 @@ class TelemetryHUD:
 
         # Bottom Instructions & Keyboard Bindings
         bottom_y = self.height - 48
-        cmd_text = "[1] ORBITAL   [2] CHAOS   [3] SINGULARITY   [H] TOGGLE HUD   [R] RESET   [F] FULLSCREEN   [ESC] EXIT"
+        cmd_text = "[1] ORBITAL   [2] CHAOS   [3] SINGULARITY   [PINCH+RELEASE] FLING   [H] HUD   [R] RESET   [F] FULLSCREEN   [ESC] EXIT"
         cmd_surf = self.font_main.render(cmd_text, True, dim_gray)
         self.hud_surface.blit(cmd_surf, (36, bottom_y))
 
