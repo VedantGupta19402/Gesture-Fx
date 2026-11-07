@@ -1,8 +1,13 @@
 """
 PHANTOM: ORBITAL MODE — Master Application Lifecycle Controller
+Phase 2: SPATIAL DISTORTION & GRAVITATIONAL LENSING ENGINE
 """
 
+import os
 import sys
+import traceback
+import ctypes
+import numpy as np
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
