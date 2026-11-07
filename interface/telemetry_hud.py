@@ -1,6 +1,7 @@
 """
 PHANTOM: ORBITAL MODE — Scientific Telemetry HUD Overlay
-Renders a high-precision aerospace / quantum research interface overlay.
+Renders high-precision aerospace / quantum research interface overlay,
+body-relative tracking coordinates, warp strain, and kinetic lock readouts.
 """
 
 import math
@@ -37,6 +38,7 @@ class TelemetryHUD:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glBindTexture(GL_TEXTURE_2D, 0)
+        self.tex_allocated = False
 
         # 2D surface for HUD overlay
         self.hud_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -45,6 +47,7 @@ class TelemetryHUD:
         self.width = max(1, width)
         self.height = max(1, height)
         self.hud_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.tex_allocated = False
 
     def toggle_visibility(self):
         self.is_visible = not self.is_visible
