@@ -1,7 +1,13 @@
 """
-PHANTOM: ORBITAL MODE — Optical Hand Tracking & Temporal Smoothing Engine
+PHANTOM: ORBITAL MODE — Optical Hand Tracking & Body-Relative Spatial Engine
+Establishes body-relative interaction origins, dual-hand midpoints,
+pinch-and-release kinetics, and spatial warp field state.
+Optimized with asynchronous optical inference worker for maximum framerate.
 """
 
+import math
+import time
+import threading
 import numpy as np
 import mediapipe as mp
 from config import settings
@@ -20,6 +26,38 @@ class TrackedHand:
         self.pinch_distance = 1.0
         self.confidence = 0.0
         self.is_present = False
+        
+        # Pinch-and-Release Spatial Kinetics
+        self.is_pinching = False
+        self.was_pinching = False
+        self.pinch_just_started = False
+        self.pinch_just_released = False
+        self.pinch_world_pos = np.zeros(3, dtype=np.float32)
+        self.velocity_history = []
+        self.release_velocity = np.zeros(3, dtype=np.float32)
+
+        # Warp disturbance intensity
+        self.warp_intensity = 0.0
+
+    def update_pinch_state(self, is_pinch_now, pinch_pos, dt):
+        self.pinch_world_pos = pinch_pos
+        self.pinch_just_started = (is_pinch_now and not self.was_pinching)
+        self.pinch_just_released = (not is_pinch_now and self.was_pinching)
+        self.was_pinching = self.is_pinching
+        self.is_pinching = is_pinch_now
+
+        self.velocity_history.append(self.palm_velocity.copy())
+        if len(self.velocity_history) > 5:
+            self.velocity_history.pop(0)
+
+        if self.pinch_just_released:
+            if len(self.velocity_history) > 0:
+                self.release_velocity = np.mean(self.velocity_history, axis=0)
+            else:
+                self.release_velocity = self.palm_velocity.copy()
+        else:
+            self.release_velocity *= 0.0
+
 
 class HandTracker:
     def __init__(self, camera_manager):
