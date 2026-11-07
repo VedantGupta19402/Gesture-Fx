@@ -1,6 +1,6 @@
 """
-PHANTOM: ORBITAL MODE — Energy Shockwaves & Central Core Dynamics
-Generates expanding 3D energy wave-fronts and multi-layered pulsating core structures.
+PHANTOM: ORBITAL MODE — Energy Shockwaves & Advanced Core Dynamics
+Controls multi-shell pulsation, accretion precession, and counter-rotating gimbals.
 """
 
 import math
@@ -34,7 +34,6 @@ class Shockwave:
 
     @property
     def alpha(self):
-        # Smooth cubic falloff as wave expands
         progress = self.lifetime / max(0.001, self.max_lifetime)
         return max(0.0, (1.0 - progress) ** 1.8)
 
@@ -43,9 +42,17 @@ class EnergyEffectsManager:
     def __init__(self):
         self.shockwaves = []
         self.last_shockwave_time = 0.0
-        self.core_rotation_1 = 0.0
-        self.core_rotation_2 = 0.0
+        
+        # Core Kinematic Rotations
+        self.core_rot_ico_1 = 0.0
+        self.core_rot_ico_2 = 0.0
+        self.gimbal_torus_1 = 0.0
+        self.gimbal_torus_2 = 0.0
+        
+        # Pulsating Waves & Accretion Timing
         self.pulse_phase = 0.0
+        self.shell_phases = [0.0, 1.2, 2.4]
+        self.accretion_time = 0.0
 
     def trigger_shockwave(self, origin, normal=(0, 0, 1), color=settings.COLOR_CYAN):
         # Prevent rapid redundant spamming
