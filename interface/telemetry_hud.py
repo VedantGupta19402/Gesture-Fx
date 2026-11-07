@@ -140,8 +140,7 @@ class TelemetryHUD:
             glVertex2f(sx, sy + r - 2); glVertex2f(sx, sy + r + t_len)
             glEnd()
 
-    def _draw_telemetry_surface(self, fps, camera_status, hands_dict, orbital_system, particle_sys):
-        """Prepares the 2D software surface with technical labels and gauges."""
+    def _draw_telemetry_surface(self, fps, camera_status, hands_dict, orbital_system, particle_sys, origin_pos, origin_mode):
         self.hud_surface.fill((0, 0, 0, 0))
 
         cyan = (0, 240, 255)
@@ -149,8 +148,10 @@ class TelemetryHUD:
         violet = (180, 80, 255)
         white = (240, 245, 255)
         dim_gray = (120, 160, 180)
+        amber = (255, 170, 40)
+
         mode_color = cyan if orbital_system.mode == settings.MODE_ORBITAL else (
-            (255, 170, 40) if orbital_system.mode == settings.MODE_CHAOS else (255, 60, 100)
+            amber if orbital_system.mode == settings.MODE_CHAOS else (255, 60, 100)
         )
 
         # Header Block
