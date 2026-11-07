@@ -77,11 +77,50 @@ class HandTracker:
         self.dual_hand_gesture = settings.GESTURE_NONE
         self.active_count = 0
 
-    def process_frame(self, rgb_frame, dt=0.016):
+        # Body-Relative Dynamic Origin State
+        self.resting_origin = np.array(settings.RESTING_ORIGIN, dtype=np.float32)
+        self.current_origin = self.resting_origin.copy()
+        self.target_origin = self.resting_origin.copy()
+        self.origin_velocity = np.zeros(3, dtype=np.float32)
+        self.origin_mode = "RESTING"
+        self.tracking_loss_timer = 0.0
+
+        # Asynchronous Optical Tracking Worker
+        self.lock = threading.Lock()
+        self.raw_results = None
+        self.worker_running = True
+        self.worker_thread = threading.Thread(target=self._optical_worker_loop, daemon=True)
+        self.worker_thread.start()
+
+    def _optical_worker_loop(self):
         """
-        Processes frame through MediaPipe and updates smoothed kinematic representations.
+        Background optical inference thread: processes webcam frames continuously
+        so rendering is never throttled by CPU inference.
         """
-        results = self.hands_detector.process(rgb_frame)
+        while self.worker_running:
+            try:
+                ret, rgb_frame, _ = self.camera_manager.read_frame()
+                if ret and rgb_frame is not None:
+                    results = self.hands_detector.process(rgb_frame)
+                    with self.lock:
+                        self.raw_results = results
+                else:
+                    time.sleep(0.01)
+            except Exception:
+                time.sleep(0.01)
+
+    def update(self, dt=0.016):
+        """Main-thread update method: consumes latest inferences with zero wait time."""
+        return self.process_frame(None, dt)
+
+    def process_frame(self, rgb_frame=None, dt=0.016):
+        """
+        Consumes latest neural inferences under thread lock, applies temporal smoothing,
+        and solves body-relative origin dynamics.
+        """
+        with self.lock:
+            results = self.raw_results
+
         present_labels = set()
 
         if results.multi_hand_landmarks and results.multi_handedness:
