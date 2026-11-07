@@ -249,12 +249,11 @@ class ParticleSystem:
                     repel = (disp_hand[mask] / dist_hand[mask]) * (4.5 / dist_hand[mask])
                     self.velocities[:self.orbital_count][mask] += repel * dt
 
-        # 5. Energy Shockwave Repulsion Waves
+        # Shockwave impulse
         if shockwaves:
             for sw in shockwaves:
-                disp_sw = self.positions - sw.origin
+                disp_sw = self.positions[:self.orbital_count] - sw.origin
                 dist_sw = np.linalg.norm(disp_sw, axis=1, keepdims=True) + 0.001
-                # Find particles near the expanding shockwave front
                 wave_dist = np.abs(dist_sw.flatten() - sw.radius)
                 wave_mask = wave_dist < 0.65
                 if np.any(wave_mask):
