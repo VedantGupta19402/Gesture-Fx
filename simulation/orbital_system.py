@@ -325,7 +325,6 @@ class OrbitalSystem:
                 center_pos=self.interaction_origin,
                 field_scale=self.field_scale,
                 mode=self.mode,
-                hand_interact_pos=primary_hand_pos,
-                hand_gesture=gesture
+                warp_fields=warp_fields,
+                hand_gesture=primary_gesture
             )
-
