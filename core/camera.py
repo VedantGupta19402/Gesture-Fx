@@ -81,12 +81,11 @@ class CameraManager:
         # Fast Synthetic Fallback Stream (< 0.1ms)
         self.synthetic_time += 0.016
         synth = np.zeros((self.height, self.width, 3), dtype=np.uint8)
-        # Draw a technical calibration reticle
         cx, cy = self.width // 2, self.height // 2
         cv2.circle(synth, (cx, cy), 80, (0, 100, 150), 1)
         cv2.line(synth, (cx - 100, cy), (cx + 100, cy), (0, 80, 120), 1)
         cv2.line(synth, (cx, cy - 100), (cx, cy + 100), (0, 80, 120), 1)
-        cv2.putText(synth, "CALIBRATION TEST PATTERN", (20, 30),
+        cv2.putText(synth, "OPTICAL SYNTHETIC TELEMETRY", (20, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 180, 220), 1)
         return False, cv2.cvtColor(synth, cv2.COLOR_BGR2RGB), synth
 
@@ -100,7 +99,6 @@ class CameraManager:
         """
         world_x = (norm_x - 0.5) * 8.6
         world_y = (0.5 - norm_y) * 6.2
-        # MediaPipe z represents relative depth around palm center (approx -0.1 to 0.1)
         world_z = -8.0 - (norm_z * 7.5)
         return np.array([world_x, world_y, world_z], dtype=np.float32)
 
