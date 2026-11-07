@@ -41,14 +41,47 @@ class ParticleSystem:
         self.jet_speeds = np.random.uniform(3.5, 7.0, size=self.jet_count).astype(np.float32)
 
         self.time = 0.0
+        self._init_particle_colors()
         self._init_initial_positions()
 
+    def _init_particle_colors(self):
+        # 1. Orbital Cloud Colors: Cyan / Plasma / Violet
+        for i in range(self.orbital_count):
+            r = np.random.rand()
+            if r < 0.50:
+                self.colors[i] = [0.0, 0.94, 1.0, np.random.uniform(0.35, 0.85)]
+            elif r < 0.82:
+                self.colors[i] = [0.12, 0.45, 1.0, np.random.uniform(0.30, 0.75)]
+            else:
+                self.colors[i] = [0.68, 0.18, 0.98, np.random.uniform(0.40, 0.90)]
+
+        # 2. Accretion Disk Colors: Doppler beaming initialized
+        acc_start = self.orbital_count
+        acc_end = acc_start + self.accretion_count
+        for i in range(acc_start, acc_end):
+            self.colors[i] = [0.4, 0.85, 1.0, 0.80]
+
+        # 3. Polar Jets: Supercharged White-Cyan
+        jet_start = acc_end
+        for i in range(jet_start, self.total_count):
+            self.colors[i] = [0.94, 0.98, 1.0, np.random.uniform(0.65, 0.95)]
+
     def _init_initial_positions(self):
-        cos_t = np.cos(self.orbit_angles)
-        sin_t = np.sin(self.orbit_angles)
-        self.positions[:, 0] = self.orbit_radii * cos_t
-        self.positions[:, 1] = np.sin(self.orbit_angles * 2.0) * 0.4
-        self.positions[:, 2] = -8.0 + self.orbit_radii * sin_t
+        c_pos = np.array(settings.RESTING_ORIGIN, dtype=np.float32)
+        
+        # Orbital
+        cos_t = np.cos(self.orb_angles)
+        sin_t = np.sin(self.orb_angles)
+        self.positions[:self.orbital_count, 0] = c_pos[0] + self.orb_radii * cos_t
+        self.positions[:self.orbital_count, 1] = c_pos[1] + np.sin(self.orb_angles * 2.0) * 0.4
+        self.positions[:self.orbital_count, 2] = c_pos[2] + self.orb_radii * sin_t
+
+        # Accretion
+        a_start = self.orbital_count
+        a_end = a_start + self.accretion_count
+        self.positions[a_start:a_end, 0] = c_pos[0] + self.acc_radii * np.cos(self.acc_angles)
+        self.positions[a_start:a_end, 1] = c_pos[1] + np.sin(self.acc_angles) * 0.12
+        self.positions[a_start:a_end, 2] = c_pos[2] + self.acc_radii * np.sin(self.acc_angles)
 
     def update(self, dt, center_pos, hand_pos=None, gesture=settings.GESTURE_NONE,
                shockwaves=None, mode=settings.MODE_ORBITAL, field_scale=1.0):
