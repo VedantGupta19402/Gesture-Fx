@@ -100,15 +100,12 @@ class ParticleSystem:
         if mode == settings.MODE_CHAOS:
             orb_speed_mult = 2.6
         elif mode == settings.MODE_SINGULARITY:
-            speed_multiplier = 4.5
+            orb_speed_mult = 4.0
 
-        self.orbit_angles = (self.orbit_angles + self.orbit_speeds * speed_multiplier * dt) % (2.0 * math.pi)
-
-        # 2. Compute Target Ideal Orbital Positions for all particles
-        radii = self.orbit_radii * field_scale
+        self.orb_angles = (self.orb_angles + self.orb_speeds * orb_speed_mult * dt) % (2.0 * math.pi)
+        radii = self.orb_radii * field_scale
         if mode == settings.MODE_SINGULARITY:
-            # Collapse inward into hyper-dense core
-            radii = radii * 0.18 + np.sin(self.time * 6.0 + self.orbit_angles) * 0.15
+            radii = radii * 0.20 + np.sin(self.time * 6.0 + self.orb_angles) * 0.14
 
         x_plane = radii * np.cos(self.orbit_angles)
         y_plane = np.sin(self.orbit_angles * self.orbit_wobble_freq + self.time) * 0.35
