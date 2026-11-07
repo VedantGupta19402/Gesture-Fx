@@ -10,7 +10,7 @@ from config import settings
 class CameraManager:
     """
     Manages webcam capture stream, frame processing, and viewport coordinate projections.
-    Provides synthetic fallback frames if camera hardware is busy or absent.
+    Provides synthetic fallback frames if camera hardware is busy, shuttered, or absent.
     """
     def __init__(self, camera_index=settings.CAMERA_INDEX,
                  width=settings.CAMERA_WIDTH, height=settings.CAMERA_HEIGHT):
@@ -27,14 +27,22 @@ class CameraManager:
         try:
             self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW if cv2.CAP_DSHOW else 0)
             if not self.cap or not self.cap.isOpened():
-                # Fallback to default backend
                 self.cap = cv2.VideoCapture(self.camera_index)
             
             if self.cap and self.cap.isOpened():
                 self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
                 self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-                self.is_active = True
-                print(f"[OPTICAL ENGINE] Camera initialized on index {self.camera_index} ({self.width}x{self.height}).")
+                
+                # Test read an initial frame to verify real stream viability
+                ret, test_frame = self.cap.read()
+                if ret and test_frame is not None:
+                    self.is_active = True
+                    print(f"[OPTICAL ENGINE] Camera initialized on index {self.camera_index} ({self.width}x{self.height}).")
+                else:
+                    self.is_active = False
+                    self.cap.release()
+                    self.cap = None
+                    print("[OPTICAL ENGINE] Optical hardware present but frame stream unavailable (busy/shuttered). Synthesizing stream.")
             else:
                 self.is_active = False
                 print("[OPTICAL ENGINE] Physical camera offline. Synthesizing telemetry stream.")
