@@ -261,16 +261,38 @@ class MasterRenderer:
 
         # Polar Meridian Gimbal
         glPushMatrix()
-        glRotatef(effects_mgr.core_rotation_2, 0.0, 1.0, 0.5)
-        glColor4f(settings.COLOR_VIOLET[0], settings.COLOR_VIOLET[1], settings.COLOR_VIOLET[2], 0.65)
-        self.geometry.draw_icosahedron(scale=0.68 * core_scale, show_faces=False)
+        glRotatef(effects_mgr.gimbal_torus_2, 1.0, 0.0, 0.0)
+        glLineWidth(1.4)
+        glColor4f(settings.COLOR_PLASMA[0], settings.COLOR_PLASMA[1], settings.COLOR_PLASMA[2], 0.55)
+        self.geometry.draw_torus(major_radius=1.14 * core_scale, minor_radius=0.045 * core_scale, rings=24, sides=6)
         glPopMatrix()
 
-        # 3. Equatorial Orbital Energy Rings
-        glColor4f(settings.COLOR_PLASMA[0], settings.COLOR_PLASMA[1], settings.COLOR_PLASMA[2], 0.5)
-        self.geometry.draw_orbital_ring(radius=0.95 * core_scale, segments=36, tick_count=8)
+        # -------------------------------------------------------------
+        # LAYER 5: PULSATING GEODESIC ENERGY SHELLS
+        # -------------------------------------------------------------
+        for phase in effects_mgr.shell_phases:
+            shell_r = (0.6 + 0.9 * (phase / (math.pi * 2.0))) * core_scale
+            shell_alpha = max(0.0, (1.0 - (phase / (math.pi * 2.0))) * 0.35)
+            glLineWidth(1.0)
+            self.geometry.draw_pulsating_shell(radius=shell_r, alpha=shell_alpha)
 
         glPopMatrix()
+
+    def render_motion_trails(self, orbital_system):
+        self.materials.set_additive_glow()
+        glLineWidth(1.4)
+
+        for body in orbital_system.bodies:
+            trail_len = len(body.trail)
+            if trail_len < 2:
+                continue
+
+            glBegin(GL_LINE_STRIP)
+            for idx, pos in enumerate(body.trail):
+                alpha_factor = (idx / trail_len) * 0.50
+                glColor4f(body.color[0], body.color[1], body.color[2], alpha_factor)
+                glVertex3fv(pos)
+            glEnd()
 
     def render_orbital_bodies(self, orbital_system):
         """Renders all geometric objects in INNER, MIDDLE, and OUTER orbital tiers."""
