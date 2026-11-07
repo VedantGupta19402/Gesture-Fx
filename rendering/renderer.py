@@ -295,14 +295,12 @@ class MasterRenderer:
             glEnd()
 
     def render_orbital_bodies(self, orbital_system):
-        """Renders all geometric objects in INNER, MIDDLE, and OUTER orbital tiers."""
         self.materials.set_additive_glow()
 
         for body in orbital_system.bodies:
             glPushMatrix()
             glTranslatef(body.world_pos[0], body.world_pos[1], body.world_pos[2])
             
-            # Apply individual rotational dynamics
             glRotatef(body.rot_angles[0], 1.0, 0.0, 0.0)
             glRotatef(body.rot_angles[1], 0.0, 1.0, 0.0)
             glRotatef(body.rot_angles[2], 0.0, 0.0, 1.0)
@@ -310,7 +308,6 @@ class MasterRenderer:
             scale = body.scale
             glColor4fv(body.color)
 
-            # Dispatch based on scientific geometry type
             gt = body.geom_type
             if gt == "icosahedron":
                 self.geometry.draw_icosahedron(scale=scale, show_faces=True)
