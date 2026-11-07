@@ -48,6 +48,9 @@ class CameraManager:
                 print("[OPTICAL ENGINE] Physical camera offline. Synthesizing telemetry stream.")
         except Exception as e:
             self.is_active = False
+            if self.cap:
+                self.cap.release()
+                self.cap = None
             print(f"[OPTICAL ENGINE] Camera initialization error: {e}. Running synthetic stream.")
 
     def read_frame(self):
@@ -56,15 +59,26 @@ class CameraManager:
         Returns: (success: bool, frame_rgb: np.ndarray, frame_bgr: np.ndarray)
         """
         if self.is_active and self.cap and self.cap.isOpened():
-            ret, frame = self.cap.read()
-            if ret and frame is not None:
-                # Mirror horizontally for intuitive natural holographic response
-                frame = cv2.flip(frame, 1)
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                self.last_frame = rgb_frame
-                return True, rgb_frame, frame
+            try:
+                ret, frame = self.cap.read()
+                if ret and frame is not None:
+                    frame = cv2.flip(frame, 1)
+                    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    self.last_frame = rgb_frame
+                    return True, rgb_frame, frame
+                else:
+                    self.is_active = False
+                    self.cap.release()
+                    self.cap = None
+                    print("[OPTICAL ENGINE] Camera stream ended. Switching to synthetic telemetry.")
+            except Exception as e:
+                self.is_active = False
+                if self.cap:
+                    self.cap.release()
+                    self.cap = None
+                print(f"[OPTICAL ENGINE] Exception in camera read: {e}. Switching to synthetic telemetry.")
         
-        # Synthetic fallback frame
+        # Fast Synthetic Fallback Stream (< 0.1ms)
         self.synthetic_time += 0.016
         synth = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         # Draw a technical calibration reticle
