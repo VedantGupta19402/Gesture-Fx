@@ -215,7 +215,7 @@ class OrbitalSystem:
     def _build_orbital_layers(self):
         self.bodies.clear()
         
-        # --- INNER LAYER: Fast, concentrated, agile geometric cores ---
+        # --- INNER LAYER: Rapid, agile geometric units ---
         inner_cfg = settings.INNER_LAYER
         for i in range(inner_cfg["count"]):
             radius = inner_cfg["radius_min"] + (inner_cfg["radius_max"] - inner_cfg["radius_min"]) * (i / max(1, inner_cfg["count"] - 1))
@@ -226,7 +226,7 @@ class OrbitalSystem:
             color = settings.COLOR_CYAN
             self.bodies.append(OrbitalBody("INNER", geom, radius, speed, scale, inc, color))
 
-        # --- MIDDLE LAYER: Diverse scientific structures & rotating prisms ---
+        # --- MIDDLE LAYER: Diverse scientific prisms & polyhedrons ---
         mid_cfg = settings.MIDDLE_LAYER
         for i in range(mid_cfg["count"]):
             radius = mid_cfg["radius_min"] + (mid_cfg["radius_max"] - mid_cfg["radius_min"]) * (i / max(1, mid_cfg["count"] - 1))
@@ -237,7 +237,7 @@ class OrbitalSystem:
             color = settings.COLOR_PLASMA
             self.bodies.append(OrbitalBody("MIDDLE", geom, radius, speed, scale, inc, color))
 
-        # --- OUTER LAYER: Broad orbital rings, wireframe cages & brackets ---
+        # --- OUTER LAYER: Broad orbital rings & structural brackets ---
         outer_cfg = settings.OUTER_LAYER
         for i in range(outer_cfg["count"]):
             radius = outer_cfg["radius_min"] + (outer_cfg["radius_max"] - outer_cfg["radius_min"]) * (i / max(1, outer_cfg["count"] - 1))
