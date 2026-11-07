@@ -88,11 +88,14 @@ hand gestures/
 
 ---
 
-## Installation
+## 🚀 Installation & Execution
 
+### 1. Prerequisites
+* Python 3.10+
+* Webcam or USB video capture device
+
+### 2. Install Dependencies
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
