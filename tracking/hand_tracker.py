@@ -159,15 +159,23 @@ class HandTracker:
                 tracked.last_palm_center = tracked.palm_center_world.copy()
                 tracked.palm_center_world = palm_center
 
-                # Pinch distance
+                # 3. Pinch measurement & pinch focal position
+                thumb_tip = world_pts[4]
+                index_tip = world_pts[8]
+                pinch_center_3d = (thumb_tip + index_tip) * 0.5
                 dx = hand_landmarks.landmark[4].x - hand_landmarks.landmark[8].x
                 dy = hand_landmarks.landmark[4].y - hand_landmarks.landmark[8].y
                 tracked.pinch_distance = float(np.hypot(dx, dy))
 
                 # Gesture recognition
-                tracked.gesture = self.recognizer.update_single_hand(
+                raw_gesture = self.recognizer.update_single_hand(
                     hand_landmarks, label, tracked.velocity_mag
                 )
+                tracked.gesture = raw_gesture
+
+                # Pinch state tracking
+                is_pinching = (tracked.gesture == settings.GESTURE_PINCH or tracked.pinch_distance < settings.PINCH_THRESHOLD)
+                tracked.update_pinch_state(is_pinching, pinch_center_3d, dt)
 
         # Mark absent hands
         for label, hand_obj in self.hands.items():
