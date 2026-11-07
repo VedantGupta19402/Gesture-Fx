@@ -107,58 +107,5 @@ python main.py
 
 To run the legacy 4x4x4 particle cube demo:
 ```bash
-python The-Sci-Fi/mini.py
+python The-Sci-Fi/mini.py --classic
 ```
-
----
-
-## Controls
-
-### PHANTOM
-
-| Key | Action |
-| --- | --- |
-| `1` | Orbital mode |
-| `2` | Chaos mode |
-| `3` | Singularity mode |
-| `H` | Toggle HUD |
-| `R` | Reset simulation |
-| `F` | Toggle fullscreen |
-| `Space` | Manual shockwave |
-| `Esc` | Exit |
-
-### Gestures
-
-| Hand | Gesture | Action |
-| --- | --- | --- |
-| Right | Pinch (thumb + index) | Scale / zoom the particle field |
-| Left | Two fingers up | Enable camera rotation |
-| Left | Move wrist / palm | Rotate the 3D scene |
-| Any | Fast swipe | Emit an energy shockwave |
-
-### The-Sci-Fi prototype
-
-| Hand | Action |
-| --- | --- |
-| Right | Pinch to scale the particle cube |
-| Left | Two fingers up + move to rotate |
-| Any | Fast motion for shockwave / glow |
-
----
-
-## Notes
-
-- The application is designed for a dark environment; strong backlighting reduces landmark confidence.
-- Keep your hand inside the camera frame, roughly 40–80 cm away.
-- If the camera fails to open, change `CAMERA_INDEX` in `config/settings.py`.
-
----
-
-## License
-
-Educational / experimental project. See the repository for details.
-
-## Credits
-
-- Original prototype: [The-Sci-Fi](https://github.com/Mrez2/The-Sci-Fi)
-- Extended PHANTOM implementation: Vedant Gupta
