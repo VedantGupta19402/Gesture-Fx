@@ -140,7 +140,6 @@ while True:
     glRotatef(rot_x, 1, 0, 0)
     glRotatef(rot_y, 0, 1, 0)
 
-    # ----- CONNECTING LINES -----
     glColor4f(0.0, 1.0, 0.6, 0.15)
     glBegin(GL_LINES)
     for i in range(len(particles)):
@@ -150,7 +149,6 @@ while True:
                 glVertex3fv(particles[j])
     glEnd()
 
-    # ----- PARTICLES -----
     glColor4f(0.0, 1.0, 0.6, 0.8)
     for p in particles:
         draw_sphere(p)
