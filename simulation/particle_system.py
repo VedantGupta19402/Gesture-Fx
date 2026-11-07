@@ -260,10 +260,17 @@ class ParticleSystem:
                     push_dir = disp_sw[wave_mask] / dist_sw[wave_mask]
                     self.velocities[:self.orbital_count][wave_mask] += push_dir * (sw.alpha * 15.0) * dt
 
-        # Limit maximum particle velocity to prevent teleportation
-        speed = np.linalg.norm(self.velocities, axis=1, keepdims=True)
-        max_speed = 15.0
-        overspeed = speed > max_speed
-        if np.any(overspeed):
-            self.velocities = np.where(overspeed, (self.velocities / speed) * max_speed, self.velocities)
+        # -------------------------------------------------------------
+        # 7. RELATIVISTIC VELOCITY LIMITER (Prevents particle explosion)
+        # -------------------------------------------------------------
+        vel_mag = np.linalg.norm(self.velocities[:self.orbital_count], axis=1, keepdims=True)
+        v_max = settings.WARP_VELOCITY_LIMIT
+        over = vel_mag > v_max
+        if np.any(over):
+            self.velocities[:self.orbital_count] = np.where(
+                over, (self.velocities[:self.orbital_count] / vel_mag) * v_max, self.velocities[:self.orbital_count]
+            )
 
+    @property
+    def count(self):
+        return self.total_count
