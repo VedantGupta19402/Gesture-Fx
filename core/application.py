@@ -39,20 +39,57 @@ class PhantomApplication:
         screen_w = info.current_w if info.current_w > 0 else settings.WINDOW_WIDTH
         screen_h = info.current_h if info.current_h > 0 else settings.WINDOW_HEIGHT
         
-        # Configure Pygame OpenGL Surface
-        pygame.display.set_caption(settings.WINDOW_TITLE)
+        self.width = min(settings.WINDOW_WIDTH, int(screen_w * 0.92))
+        self.height = min(settings.WINDOW_HEIGHT, int(screen_h * 0.88))
+        self.is_fullscreen = False
+
+        # Explicitly configure OpenGL attributes before set_mode
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 2)
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 1)
+        pygame.display.gl_set_attribute(pygame.GL_DOUBLEBUFFER, 1)
+        pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 24)
+        pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
+        pygame.display.gl_set_attribute(pygame.GL_ACCELERATED_VISUAL, 1)
+
+        # 1. Create Display Window FIRST before starting camera or inference
         self.flags = DOUBLEBUF | OPENGL | RESIZABLE
         self.screen = pygame.display.set_mode((self.width, self.height), self.flags)
-        
-        # Core Systems
-        self.camera = CameraManager()
-        self.tracker = HandTracker(self.camera)
+        pygame.display.set_caption(settings.WINDOW_TITLE)
+
+        # Query & Log Hardware OpenGL Telemetry
+        gl_version = glGetString(GL_VERSION)
+        gl_vendor = glGetString(GL_VENDOR)
+        gl_renderer = glGetString(GL_RENDERER)
+        print(f"[GRAPHICS ENGINE] Context created successfully:")
+        print(f"  * GL Version  : {gl_version.decode() if gl_version else 'Unknown'}")
+        print(f"  * GL Vendor   : {gl_vendor.decode() if gl_vendor else 'Unknown'}")
+        print(f"  * GL Renderer : {gl_renderer.decode() if gl_renderer else 'Unknown'}")
+        print(f"  * Viewport    : {self.width}x{self.height} (Display: {screen_w}x{screen_h})")
+
+        # Force window visible on Windows
+        self._ensure_window_visible()
+
+        # 2. Render immediate standby/splash frame so DWM maps the window to screen
+        glClearColor(settings.COLOR_BG[0], settings.COLOR_BG[1], settings.COLOR_BG[2], 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        pygame.display.flip()
+        pygame.event.pump()
+
+        # 3. Core Systems Initialization
+        print("[PHANTOM] Initializing 3D rendering pipeline & spatial simulation...")
+        self.renderer = MasterRenderer(self.width, self.height)
+        self.hud = TelemetryHUD(self.width, self.height)
         self.orbital_system = OrbitalSystem()
         self.particle_system = ParticleSystem(settings.MAX_PARTICLES)
         self.energy_effects = EnergyEffectsManager()
-        self.renderer = MasterRenderer(self.width, self.height)
-        self.hud = TelemetryHUD(self.width, self.height)
-        
+
+        pygame.event.pump()
+
+        # 4. Optical Hardware & Tracking Inference
+        print("[PHANTOM] Connecting optical capture and neural models...")
+        self.camera = CameraManager()
+        self.tracker = HandTracker(self.camera)
+
         self.clock = pygame.time.Clock()
         self.running = True
         self.fps = 60.0
