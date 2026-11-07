@@ -239,15 +239,15 @@ class ParticleSystem:
 
             # Pinch: Micro-singularity compression
             elif gesture == settings.GESTURE_PINCH:
-                pinch_pull = (-disp_hand / dist_hand) * (16.0 / np.clip(dist_hand, 0.1, 5.0))
-                self.velocities += pinch_pull * dt
+                pinch_pull = (-disp_hand / dist_hand) * (18.0 / np.clip(dist_hand, 0.1, 5.0))
+                self.velocities[:self.orbital_count] += pinch_pull * dt
 
-            # Open Palm: Gentle interactive repulsion field
+            # Open Palm: Gentle metric expansion
             elif gesture == settings.GESTURE_OPEN_PALM:
                 mask = (dist_hand < 2.5).flatten()
                 if np.any(mask):
                     repel = (disp_hand[mask] / dist_hand[mask]) * (4.5 / dist_hand[mask])
-                    self.velocities[mask] += repel * dt
+                    self.velocities[:self.orbital_count][mask] += repel * dt
 
         # 5. Energy Shockwave Repulsion Waves
         if shockwaves:
