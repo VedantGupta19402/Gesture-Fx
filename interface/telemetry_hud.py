@@ -155,8 +155,8 @@ class TelemetryHUD:
         )
 
         # Header Block
-        title_surf = self.font_title.render("PHANTOM // ORBITAL MODE", True, cyan)
-        sub_surf = self.font_main.render("HOLOGRAPHIC RESEARCH INTERFACE — SYS v2.4", True, dim_gray)
+        title_surf = self.font_title.render("PHANTOM // SPATIAL DISTORTION ENGINE", True, cyan)
+        sub_surf = self.font_main.render("BODY-RELATIVE CELESTIAL METRIC — SYS v2.5", True, dim_gray)
         self.hud_surface.blit(title_surf, (36, 32))
         self.hud_surface.blit(sub_surf, (36, 56))
 
@@ -166,13 +166,18 @@ class TelemetryHUD:
         self.hud_surface.blit(mode_surf, (36, 80))
 
         # Primary Telemetry Metrics Block (Top-Left)
-        y = 115
+        y = 112
+        grab_status = "LOCKED [PINCH FLING READY]" if orbital_system.grabbed_body else "STANDBY"
+        grab_color = white if orbital_system.grabbed_body else dim_gray
+
         left_metrics = [
             ("OPTICAL SENSOR", f"{settings.CAMERA_WIDTH}x{settings.CAMERA_HEIGHT} ({'ONLINE' if camera_status else 'SYNTH'})"),
             ("RENDER ENGINE", f"{fps:.1f} FPS (GL DUAL-PASS)"),
-            ("ACTIVE PARTICLES", f"{particle_sys.count:,}"),
-            ("ORBITAL BODIES", f"{len(orbital_system.bodies)} (3 TIERS)"),
-            ("FIELD INTENSITY", f"{int(orbital_system.field_intensity * 100)}%"),
+            ("SPATIAL ANCHOR", f"{origin_mode}"),
+            ("ORIGIN XYZ", f"[{origin_pos[0]:+.2f}, {origin_pos[1]:+.2f}, {origin_pos[2]:+.2f}]"),
+            ("GRAV. LENSING", f"ACTIVE (Rs: {settings.EVENT_HORIZON_RADIUS:.2f})"),
+            ("KINETIC GRAB", f"{grab_status}"),
+            ("ACTIVE PARTICLES", f"{particle_sys.total_count:,} (ORB+ACC+JET)"),
             ("FIELD EXPANSION", f"{orbital_system.field_scale:.2f}x"),
         ]
 
