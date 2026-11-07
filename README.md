@@ -99,20 +99,13 @@ hand gestures/
 pip install -r requirements.txt
 ```
 
-> A working webcam is required. On Windows, allow camera access for the terminal/app running Python.
-
----
-
-## Running
-
-### PHANTOM // Orbital Mode
-
+### 3. Launch the Application
 ```bash
 python main.py
 ```
+*(Or navigate to `The-Sci-Fi` and run `python mini.py`)*
 
-### Original prototype
-
+To run the legacy 4x4x4 particle cube demo:
 ```bash
 python The-Sci-Fi/mini.py
 ```
