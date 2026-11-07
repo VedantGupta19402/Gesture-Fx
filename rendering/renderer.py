@@ -335,7 +335,6 @@ class MasterRenderer:
             glPopMatrix()
 
     def render_shockwaves(self, effects_mgr):
-        """Renders expanding 3D energy shockwave rings."""
         self.materials.set_additive_glow()
         glLineWidth(2.5)
 
@@ -346,13 +345,9 @@ class MasterRenderer:
 
             glPushMatrix()
             glTranslatef(sw.origin[0], sw.origin[1], sw.origin[2])
-
-            # Orient ring perpendicular to shockwave normal
-            # For screen normal (0, 0, 1) default is flat on XY
             glColor4f(sw.color[0], sw.color[1], sw.color[2], alpha * 0.85)
             self.geometry.draw_orbital_ring(radius=sw.radius, segments=56, tick_count=12)
 
-            # Secondary resonant echo ring
             glColor4f(settings.COLOR_VIOLET[0], settings.COLOR_VIOLET[1], settings.COLOR_VIOLET[2], alpha * 0.4)
             self.geometry.draw_orbital_ring(radius=max(0.1, sw.radius * 0.82), segments=40, tick_count=0)
 
