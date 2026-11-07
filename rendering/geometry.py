@@ -18,16 +18,16 @@ class GeometryVault:
         self._init_octahedron_data()
         self.quadric = gluNewQuadric()
         gluQuadricNormals(self.quadric, GLU_SMOOTH)
+        self._compile_display_lists()
 
     def _init_icosahedron_data(self):
         phi = (1.0 + math.sqrt(5.0)) / 2.0
-        # 12 vertices of an icosahedron normalized
         raw_v = [
             (-1,  phi, 0), ( 1,  phi, 0), (-1, -phi, 0), ( 1, -phi, 0),
             (0, -1,  phi), (0,  1,  phi), (0, -1, -phi), (0,  1, -phi),
             ( phi, 0, -1), ( phi, 0,  1), (-phi, 0, -1), (-phi, 0,  1)
         ]
-        self.ico_verts = [np.array(v, dtype=np.float32) / math.sqrt(1 + phi*phi) for v in raw_v]
+        self.ico_verts = [np.array(v, dtype=np.float32) / math.sqrt(1 + phi * phi) for v in raw_v]
         self.ico_faces = [
             (0, 11, 5), (0, 5, 1), (0, 1, 7), (0, 7, 10), (0, 10, 11),
             (1, 5, 9), (5, 11, 4), (11, 10, 2), (10, 7, 6), (7, 1, 8),
