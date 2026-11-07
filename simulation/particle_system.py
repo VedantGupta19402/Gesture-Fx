@@ -232,12 +232,12 @@ class ParticleSystem:
             disp_hand = self.positions[:self.orbital_count] - hand_pos
             dist_hand = np.linalg.norm(disp_hand, axis=1, keepdims=True) + 0.01
 
-            # Closed Fist: Gravitational black hole suction towards fist
+            # Closed Fist: Singularity black hole suction
             if gesture == settings.GESTURE_CLOSED_FIST:
-                fist_pull = (-disp_hand / dist_hand) * (12.0 / np.clip(dist_hand, 0.2, 8.0))
-                self.velocities += fist_pull * dt
+                fist_pull = (-disp_hand / dist_hand) * (14.0 / np.clip(dist_hand, 0.2, 8.0))
+                self.velocities[:self.orbital_count] += fist_pull * dt
 
-            # Pinch: Compress particles into a tight quantum singularity at fingers
+            # Pinch: Micro-singularity compression
             elif gesture == settings.GESTURE_PINCH:
                 pinch_pull = (-disp_hand / dist_hand) * (16.0 / np.clip(dist_hand, 0.1, 5.0))
                 self.velocities += pinch_pull * dt
