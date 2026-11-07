@@ -184,13 +184,11 @@ class OrbitalBody:
 
         # 9. Disintegration / Reformation Kinematics
         if mode == settings.MODE_CHAOS:
-            # Structures break apart into chaotic orbits
             if np.linalg.norm(self.disintegration_target) < 0.1:
                 self.disintegration_target = np.random.uniform(-1.8, 1.8, size=3).astype(np.float32)
-            self.disintegration_offset += (self.disintegration_target - self.disintegration_offset) * (dt * 2.0)
+            self.disintegration_offset += (self.disintegration_target - self.disintegration_offset) * (dt * 2.2)
         else:
-            # Smoothly reform back to pristine geometric equilibrium
-            self.disintegration_offset *= max(0.0, 1.0 - dt * 3.5)
+            self.disintegration_offset *= max(0.0, 1.0 - dt * 3.8)
             self.disintegration_target *= 0.0
 
         self.world_pos = raw_pos + self.disintegration_offset
