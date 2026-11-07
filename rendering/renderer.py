@@ -207,12 +207,15 @@ class MasterRenderer:
         glColor4fv(settings.COLOR_SINGULARITY)
         self.geometry.draw_event_horizon(radius=settings.EVENT_HORIZON_RADIUS * core_scale)
 
-    def render_energy_core(self, center_pos, effects_mgr, field_intensity=0.5):
-        """Renders the pulsating central scientific energy core."""
+        # B. Razor-Sharp Photon Ring (Gravitational lensing light loop)
         self.materials.set_additive_glow()
+        glLineWidth(2.6)
+        glColor4f(settings.COLOR_WHITE[0], settings.COLOR_WHITE[1], settings.COLOR_WHITE[2], 0.95)
+        self.geometry.draw_photon_ring(radius=settings.PHOTON_RING_RADIUS * core_scale, segments=64)
         
-        pulse = 1.0 + 0.18 * math.sin(effects_mgr.pulse_phase)
-        core_scale = (0.55 + 0.25 * field_intensity) * pulse
+        # Secondary resonant halo
+        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.45)
+        self.geometry.draw_photon_ring(radius=settings.PHOTON_RING_RADIUS * core_scale * 1.12, segments=48)
 
         glPushMatrix()
         glTranslatef(center_pos[0], center_pos[1], center_pos[2])
