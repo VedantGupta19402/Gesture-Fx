@@ -248,13 +248,18 @@ class MasterRenderer:
         self.geometry.draw_icosahedron(scale=0.74 * core_scale, show_faces=True)
         glPopMatrix()
 
-        # 2. Dual Counter-Rotating Icosahedrons
+        # -------------------------------------------------------------
+        # LAYER 4: ORTHOGONAL GIMBAL TORUS RINGS
+        # -------------------------------------------------------------
+        # Equatorial Gimbal
         glPushMatrix()
-        glRotatef(effects_mgr.core_rotation_1, 1.0, 0.5, 0.0)
-        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.75)
-        self.geometry.draw_icosahedron(scale=0.45 * core_scale, show_faces=False)
+        glRotatef(effects_mgr.gimbal_torus_1, 0.0, 1.0, 0.0)
+        glLineWidth(1.4)
+        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.60)
+        self.geometry.draw_torus(major_radius=0.98 * core_scale, minor_radius=0.045 * core_scale, rings=24, sides=6)
         glPopMatrix()
 
+        # Polar Meridian Gimbal
         glPushMatrix()
         glRotatef(effects_mgr.core_rotation_2, 0.0, 1.0, 0.5)
         glColor4f(settings.COLOR_VIOLET[0], settings.COLOR_VIOLET[1], settings.COLOR_VIOLET[2], 0.65)
