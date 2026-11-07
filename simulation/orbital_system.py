@@ -313,10 +313,16 @@ class OrbitalSystem:
         self.field_scale += (self.target_field_scale - self.field_scale) * (dt * 3.2)
 
         # 4. Update Each Orbital Body
+        primary_gesture = settings.GESTURE_NONE
+        if hands_dict.get("Right") and hands_dict["Right"].is_present:
+            primary_gesture = hands_dict["Right"].gesture
+        elif hands_dict.get("Left") and hands_dict["Left"].is_present:
+            primary_gesture = hands_dict["Left"].gesture
+
         for body in self.bodies:
             body.update(
                 dt=dt,
-                center_pos=self.smoothed_center,
+                center_pos=self.interaction_origin,
                 field_scale=self.field_scale,
                 mode=self.mode,
                 hand_interact_pos=primary_hand_pos,
