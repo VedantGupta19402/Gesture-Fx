@@ -258,22 +258,24 @@ class PhantomApplication:
             camera_status=self.camera.is_active,
             hands_dict=hands,
             orbital_system=self.orbital_system,
-            particle_sys=self.particle_system
+            particle_sys=self.particle_system,
+            origin_pos=body_origin,
+            origin_mode=origin_mode
         )
 
         pygame.display.flip()
 
     def run(self, max_frames=None):
         frame_count = 0
-        while self.running:
-            dt = self.clock.tick(settings.TARGET_FPS) / 1000.0
-            # Clamp dt to prevent physics explosion if a frame lags
-            dt = min(0.05, max(0.001, dt))
-            self.fps = self.clock.get_fps()
+        try:
+            while self.running:
+                dt = self.clock.tick(settings.TARGET_FPS) / 1000.0
+                dt = min(0.05, max(0.001, dt))
+                self.fps = self.clock.get_fps()
 
-            self.handle_events()
-            hands = self.update_physics(dt)
-            self.render_scene(hands)
+                self.handle_events()
+                hands, body_origin, origin_mode, warp_fields = self.update_physics(dt)
+                self.render_scene(hands, body_origin, origin_mode, warp_fields)
 
             frame_count += 1
             if max_frames and frame_count >= max_frames:
