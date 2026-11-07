@@ -20,12 +20,24 @@ from simulation.energy_effects import EnergyEffectsManager
 from rendering.renderer import MasterRenderer
 from interface.telemetry_hud import TelemetryHUD
 
+# Configure SDL environment before pygame.init
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+try:
+    # Set Windows DPI awareness so OpenGL viewport is not clipped/virtualized
+    ctypes.windll.user32.SetProcessDPIAware()
+except Exception:
+    pass
+
 class PhantomApplication:
     def __init__(self):
+        print("[PHANTOM] Initializing Pygame display & OpenGL context...")
         pygame.init()
-        self.width = settings.WINDOW_WIDTH
-        self.height = settings.WINDOW_HEIGHT
-        self.is_fullscreen = False
+        pygame.display.init()
+
+        # Display Dimensions - adapt to user screen resolution if smaller
+        info = pygame.display.Info()
+        screen_w = info.current_w if info.current_w > 0 else settings.WINDOW_WIDTH
+        screen_h = info.current_h if info.current_h > 0 else settings.WINDOW_HEIGHT
         
         # Configure Pygame OpenGL Surface
         pygame.display.set_caption(settings.WINDOW_TITLE)
