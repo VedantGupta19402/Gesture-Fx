@@ -1,19 +1,17 @@
 """
-PHANTOM: ORBITAL MODE — 3D Holographic Geometry Engine
-Generates and caches scientific geometric primitives (Icosahedrons, Torus Rings,
-Wireframe Cubes, Spheres, Octahedrons, Celestial Brackets).
+PHANTOM: ORBITAL MODE — 3D Holographic Geometry Engine (Hardware Accelerated)
+Compiles geometric primitives into GPU display lists (Icosahedrons, Torus Rings,
+Accretion Disks, Event Horizon Spheres, Photon Rings, Pulsating Shells, Warp Bubbles).
 """
 
 import math
+import random
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from config import settings
 
 class GeometryVault:
-    """
-    Constructs and renders 3D scientific primitives with wireframe and glowing aesthetics.
-    """
     def __init__(self):
         self._init_icosahedron_data()
         self._init_cube_data()
