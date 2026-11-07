@@ -84,28 +84,16 @@ class GeometryVault:
             v2 = self.cube_verts[i2]
             glVertex3f(v1[0], v1[1], v1[2])
             glVertex3f(v2[0], v2[1], v2[2])
-        if inner_cross:
-            # Subtle internal scientific diagnostic diagonals
-            d = 0.25 * scale
-            glVertex3f(-d, 0, 0); glVertex3f(d, 0, 0)
-            glVertex3f(0, -d, 0); glVertex3f(0, d, 0)
-            glVertex3f(0, 0, -d); glVertex3f(0, 0, d)
+        d = 0.25
+        glVertex3f(-d, 0, 0); glVertex3f(d, 0, 0)
+        glVertex3f(0, -d, 0); glVertex3f(0, d, 0)
+        glVertex3f(0, 0, -d); glVertex3f(0, 0, d)
         glEnd()
+        glEndList()
 
-    def draw_icosahedron(self, scale=1.0, show_faces=True):
-        if show_faces:
-            # Translucent structural faces
-            glBegin(GL_TRIANGLES)
-            for f in self.ico_faces:
-                v0 = self.ico_verts[f[0]] * scale
-                v1 = self.ico_verts[f[1]] * scale
-                v2 = self.ico_verts[f[2]] * scale
-                glVertex3f(v0[0], v0[1], v0[2])
-                glVertex3f(v1[0], v1[1], v1[2])
-                glVertex3f(v2[0], v2[1], v2[2])
-            glEnd()
-        
-        # High-contrast neon edges
+        # 2. Icosahedron Edges
+        self.dl_ico_edges = glGenLists(1)
+        glNewList(self.dl_ico_edges, GL_COMPILE)
         glBegin(GL_LINES)
         for i1, i2 in self.ico_edges:
             v1 = self.ico_verts[i1] * scale
