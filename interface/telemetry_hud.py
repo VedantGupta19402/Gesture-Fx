@@ -84,18 +84,18 @@ class TelemetryHUD:
 
         # Restore Matrix Modes
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
 
     def _draw_corner_brackets(self):
-        """Draws crisp scientific corner brackets around the viewport."""
         glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.45)
         glLineWidth(1.5)
         
-        m = 24.0      # Margin
-        blen = 35.0   # Bracket arm length
+        m = 24.0
+        blen = 35.0
         w, h = float(self.width), float(self.height)
 
         glBegin(GL_LINES)
