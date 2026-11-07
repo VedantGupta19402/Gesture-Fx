@@ -233,12 +233,15 @@ class TelemetryHUD:
         self.hud_surface.blit(cmd_surf, (36, bottom_y))
 
     def _render_hud_texture(self):
-        """Blits the 2D surface to the screen via an OpenGL texture quad."""
         tex_data = pygame.image.tostring(self.hud_surface, "RGBA", True)
         
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.tex_id)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.width, self.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data)
+        if not self.tex_allocated:
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.width, self.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data)
+            self.tex_allocated = True
+        else:
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.width, self.height, GL_RGBA, GL_UNSIGNED_BYTE, tex_data)
 
         glColor4f(1.0, 1.0, 1.0, 1.0)
         glBegin(GL_QUADS)
@@ -250,4 +253,3 @@ class TelemetryHUD:
 
         glBindTexture(GL_TEXTURE_2D, 0)
         glDisable(GL_TEXTURE_2D)
-
