@@ -76,14 +76,14 @@ hand gestures/
 │   ├── particle_system.py      # Vectorized SIMD particle dynamics
 │   └── energy_effects.py       # Shockwave propagation and core dynamics
 ├── rendering/
-│   ├── geometry.py          # Primitive builders
-│   ├── materials.py         # Neon / glow materials
-│   └── renderer.py          # Master renderer
+│   ├── geometry.py             # Icosahedrons, Torus, Cubes, Rings
+│   ├── materials.py            # Additive glow and alpha state blending
+│   └── renderer.py             # Master 3D scene compositor
 ├── interface/
-│   └── telemetry_hud.py     # Heads-up display
+│   └── telemetry_hud.py        # Scientific 2D HUD overlay & reticles
 └── The-Sci-Fi/
-    ├── mini.py              # Original prototype
-    └── mini.ipynb           # Notebook version
+    ├── mini.py                 # Launches PHANTOM (or pass --classic for legacy)
+    └── README.md
 ```
 
 ---
