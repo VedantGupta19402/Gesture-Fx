@@ -141,7 +141,7 @@ class PhantomApplication:
                     self.toggle_fullscreen()
                 elif event.key == K_SPACE:
                     self.energy_effects.trigger_shockwave(
-                        origin=self.orbital_system.smoothed_center,
+                        origin=self.orbital_system.interaction_origin,
                         color=settings.COLOR_WHITE
                     )
 
@@ -156,8 +156,10 @@ class PhantomApplication:
             self.flags = DOUBLEBUF | OPENGL | RESIZABLE
 
         self.screen = pygame.display.set_mode((self.width, self.height), self.flags)
+        self.renderer.init_gl()
         self.renderer.set_viewport(self.width, self.height)
         self.hud.set_viewport(self.width, self.height)
+        self._ensure_window_visible()
 
     def reset_simulation(self):
         self.orbital_system._build_orbital_layers()
