@@ -183,14 +183,14 @@ class TelemetryHUD:
 
         for label, val in left_metrics:
             lbl_surf = self.font_main.render(f"{label:<18} : ", True, dim_gray)
-            val_surf = self.font_main.render(val, True, white)
+            val_surf = self.font_main.render(val, True, white if label != "KINETIC GRAB" else (cyan if orbital_system.grabbed_body else white))
             self.hud_surface.blit(lbl_surf, (36, y))
             self.hud_surface.blit(val_surf, (190, y))
-            y += 20
+            y += 19
 
         # Field Intensity Meter Bar
         bar_x = 36
-        bar_y = y + 5
+        bar_y = y + 4
         bar_w = 200
         bar_h = 7
         pygame.draw.rect(self.hud_surface, (20, 40, 60), (bar_x, bar_y, bar_w, bar_h), 1)
