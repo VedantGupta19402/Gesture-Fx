@@ -121,10 +121,13 @@ class PhantomApplication:
 
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    print("[PHANTOM] ESC key pressed — exiting cleanly.")
                     self.running = False
                 elif event.key == K_1:
+                    print("[PHANTOM] Activated ORBITAL MODE.")
                     self.orbital_system.set_mode(settings.MODE_ORBITAL)
                 elif event.key == K_2:
+                    print("[PHANTOM] Activated CHAOS MODE.")
                     self.orbital_system.set_mode(settings.MODE_CHAOS)
                 elif event.key == K_3:
                     self.orbital_system.set_mode(settings.MODE_SINGULARITY)
