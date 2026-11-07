@@ -252,17 +252,48 @@ class OrbitalSystem:
         if new_mode in [settings.MODE_ORBITAL, settings.MODE_CHAOS, settings.MODE_SINGULARITY]:
             self.mode = new_mode
 
-    def update(self, dt, primary_hand_pos=None, gesture=settings.GESTURE_NONE, dual_gesture=settings.GESTURE_NONE):
-        self.core_pulse_time += dt * settings.CORE_PULSE_SPEED
+    def handle_pinch_kinetics(self, hands_dict):
+        """
+        Processes pinch-and-release mechanics: grabs nearest body and flings on release.
+        """
+        for label in ["Right", "Left"]:
+            hand = hands_dict.get(label)
+            if not hand or not hand.is_present:
+                continue
 
-        # 1. Update Central Anchor Point
-        if primary_hand_pos is not None:
-            self.target_field_scale = 1.0
-            # Lerp center towards hand for fluid motion
-            self.smoothed_center += (primary_hand_pos - self.smoothed_center) * (dt * 4.5)
-        else:
-            default_center = np.array([0.0, 0.0, -8.0], dtype=np.float32)
-            self.smoothed_center += (default_center - self.smoothed_center) * (dt * 2.0)
+            # 1. Check if pinch just initiated: Grab closest body
+            if hand.pinch_just_started and self.grabbed_body is None:
+                closest_b = None
+                closest_d = settings.GRAB_RADIUS
+                for b in self.bodies:
+                    if not b.is_grabbed:
+                        d = float(np.linalg.norm(b.world_pos - hand.pinch_world_pos))
+                        if d < closest_d:
+                            closest_d = d
+                            closest_b = b
+
+                if closest_b is not None:
+                    closest_b.is_grabbed = True
+                    closest_b.grabbed_hand_label = label
+                    self.grabbed_body = closest_b
+
+            # 2. Update position while grabbed
+            if self.grabbed_body and self.grabbed_body.is_grabbed and self.grabbed_body.grabbed_hand_label == label:
+                if hand.is_pinching:
+                    self.grabbed_body.world_pos = hand.pinch_world_pos.copy()
+                
+                # 3. Check if pinch released: Fling into new orbit!
+                if hand.pinch_just_released:
+                    self.grabbed_body.launch(hand.release_velocity, self.interaction_origin)
+                    self.grabbed_body = None
+
+    def update(self, dt, body_origin, hands_dict, warp_fields, dual_gesture=settings.GESTURE_NONE):
+        self.core_pulse_time += dt * settings.CORE_PULSE_SPEED
+        self.accretion_time += dt
+        self.interaction_origin = body_origin.copy()
+
+        # 1. Process Pinch-and-Release Kinetic Manipulations
+        self.handle_pinch_kinetics(hands_dict)
 
         # 2. Dual-Hand Expansion / Compression Handling
         if dual_gesture == settings.GESTURE_SPREAD:
