@@ -217,12 +217,36 @@ class MasterRenderer:
         glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.45)
         self.geometry.draw_photon_ring(radius=settings.PHOTON_RING_RADIUS * core_scale * 1.12, segments=48)
 
+        # -------------------------------------------------------------
+        # LAYER 2: RELATIVISTIC ACCRETION DISK
+        # -------------------------------------------------------------
         glPushMatrix()
-        glTranslatef(center_pos[0], center_pos[1], center_pos[2])
+        glRotatef(math.degrees(settings.ACCRETION_DISK_TILT), 1.0, 0.0, 0.4)
+        self.geometry.draw_accretion_disk(
+            inner_r=settings.ACCRETION_DISK_INNER * core_scale,
+            outer_r=settings.ACCRETION_DISK_OUTER * core_scale,
+            time_val=effects_mgr.accretion_time
+        )
+        glPopMatrix()
 
-        # 1. Inner Radiant Sphere
-        glColor4f(settings.COLOR_WHITE[0], settings.COLOR_WHITE[1], settings.COLOR_WHITE[2], 0.85)
-        self.geometry.draw_sphere(radius=0.18 * core_scale, slices=12, stacks=12)
+        # -------------------------------------------------------------
+        # LAYER 3: DUAL COUNTER-ROTATING ICOSAHEDRONS
+        # -------------------------------------------------------------
+        # Inner Electric Cyan Icosahedron
+        glPushMatrix()
+        glRotatef(effects_mgr.core_rot_ico_1, 1.0, 0.5, 0.2)
+        glLineWidth(1.8)
+        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.85)
+        self.geometry.draw_icosahedron(scale=0.52 * core_scale, show_faces=False)
+        glPopMatrix()
+
+        # Outer Ultraviolet Icosahedron with Translucent Face Glow
+        glPushMatrix()
+        glRotatef(effects_mgr.core_rot_ico_2, -0.4, 1.0, 0.6)
+        glLineWidth(1.6)
+        glColor4f(settings.COLOR_VIOLET[0], settings.COLOR_VIOLET[1], settings.COLOR_VIOLET[2], 0.25)
+        self.geometry.draw_icosahedron(scale=0.74 * core_scale, show_faces=True)
+        glPopMatrix()
 
         # 2. Dual Counter-Rotating Icosahedrons
         glPushMatrix()
