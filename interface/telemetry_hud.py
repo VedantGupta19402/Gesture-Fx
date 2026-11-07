@@ -52,7 +52,7 @@ class TelemetryHUD:
     def toggle_visibility(self):
         self.is_visible = not self.is_visible
 
-    def render(self, fps, camera_status, hands_dict, orbital_system, particle_sys):
+    def render(self, fps, camera_status, hands_dict, orbital_system, particle_sys, origin_pos, origin_mode):
         if not self.is_visible:
             return
 
@@ -66,6 +66,7 @@ class TelemetryHUD:
         glLoadIdentity()
         
         glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -76,7 +77,7 @@ class TelemetryHUD:
         self._draw_hand_reticles(hands_dict)
 
         # 3. Draw Telemetry Text & Meters onto 2D Surface
-        self._draw_telemetry_surface(fps, camera_status, hands_dict, orbital_system, particle_sys)
+        self._draw_telemetry_surface(fps, camera_status, hands_dict, orbital_system, particle_sys, origin_pos, origin_mode)
 
         # 4. Upload & Render HUD Texture
         self._render_hud_texture()
