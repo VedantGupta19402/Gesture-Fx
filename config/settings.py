@@ -1,6 +1,7 @@
 """
 PHANTOM: ORBITAL MODE — Global Configuration & Design System
 Art Direction: DARK SCIENTIFIC FUTURISM
+Phase 2: SPATIAL DISTORTION & GRAVITATIONAL LENSING ENGINE
 """
 
 import math
@@ -8,7 +9,7 @@ import math
 # Window & Display
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
-WINDOW_TITLE = "PHANTOM // ORBITAL MODE — HOLOGRAPHIC RESEARCH INTERFACE"
+WINDOW_TITLE = "PHANTOM // ORBITAL MODE — SPATIAL DISTORTION ENGINE"
 TARGET_FPS = 60
 CAMERA_INDEX = 0
 CAMERA_WIDTH = 640
@@ -21,9 +22,9 @@ FAR_CLIP = 150.0
 CAMERA_DEFAULT_POS = (0.0, 0.0, -8.5)
 
 # Color Palette (RGBA float tuples, 0.0 - 1.0)
-COLOR_BG = (0.012, 0.016, 0.028, 1.0)           # Deep Obsidian / Lab Void
-COLOR_CYAN = (0.0, 0.94, 1.0, 0.9)              # Electric Cyan (Primary telemetry & energy)
-COLOR_PLASMA = (0.15, 0.45, 1.0, 0.85)          # Plasma Blue (Mid-layer orbits)
+COLOR_BG = (0.010, 0.014, 0.024, 1.0)           # Deep Obsidian Lab Void
+COLOR_CYAN = (0.0, 0.94, 1.0, 0.90)             # Electric Cyan (Primary telemetry & energy)
+COLOR_PLASMA = (0.12, 0.45, 1.0, 0.85)          # Plasma Blue (Mid-layer orbits & Doppler receding)
 COLOR_VIOLET = (0.68, 0.18, 0.98, 0.85)         # Ultraviolet (Outer resonant structures)
 COLOR_WHITE = (0.95, 0.98, 1.0, 0.95)           # Pure Radiance (Core highlights & focal points)
 COLOR_AMBER = (1.0, 0.65, 0.15, 0.9)            # Warning / Singularity overload
