@@ -116,13 +116,12 @@ class OrbitalBody:
 
         self.theta = (self.theta + self.orbital_speed * speed_mult * dt) % (2.0 * math.pi)
 
-        # 3. Dynamic Radius with Eccentricity & Gestural Scaling
+        # 3. Dynamic Radius with Eccentricity
         ecc = self.eccentricity
         if mode == settings.MODE_CHAOS:
-            ecc = min(0.65, ecc * 2.5)
+            ecc = min(0.68, ecc * 2.5)
 
         r = (self.base_radius * field_scale) * (1.0 - ecc * ecc) / (1.0 + ecc * math.cos(self.theta))
-        
         if mode == settings.MODE_SINGULARITY:
             # Gravitational collapse towards central focal point
             r = max(0.4, r * 0.28)
