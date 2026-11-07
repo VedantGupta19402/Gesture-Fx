@@ -51,20 +51,70 @@ class OrbitalBody:
         self.disintegration_target = np.zeros(3, dtype=np.float32)
         self.wobble_seed = random.uniform(0.0, 100.0)
 
-    def update(self, dt, center_pos, field_scale=1.0, mode=settings.MODE_ORBITAL, hand_interact_pos=None, hand_gesture=settings.GESTURE_NONE):
-        # 1. Update Orbital Phase Angle
+    def launch(self, release_velocity, center_pos):
+        """
+        Fling object along release vector and re-parameterize Keplerian orbit.
+        """
+        self.is_grabbed = False
+        self.is_flung = True
+        self.linear_velocity = release_velocity.copy() * settings.LAUNCH_SPEED_MULT
+        
+        # Compute new orbital distance & inclination from release point
+        rel_pos = self.world_pos - center_pos
+        new_radius = float(np.linalg.norm(rel_pos))
+        self.base_radius = max(1.2, min(8.0, new_radius))
+        self.current_radius = self.base_radius
+
+        # Set phase angle
+        self.theta = math.atan2(rel_pos[2], rel_pos[0])
+        
+        # Increase orbital speed based on fling kinetic energy
+        fling_speed = float(np.linalg.norm(self.linear_velocity))
+        if fling_speed > 0.8:
+            self.orbital_speed = math.copysign(min(3.5, 1.2 + fling_speed * 0.4), self.orbital_speed)
+            self.eccentricity = min(0.65, 0.15 + fling_speed * 0.12)
+
+    def update(self, dt, center_pos, field_scale=1.0, mode=settings.MODE_ORBITAL,
+               warp_fields=None, hand_gesture=settings.GESTURE_NONE):
+        # 1. Update Self Rotation
+        for i in range(3):
+            self.rot_angles[i] = (self.rot_angles[i] + self.rot_speeds[i] * dt) % 360.0
+
+        if self.is_grabbed:
+            # Supercharged state while locked in user's fingers
+            self.charge_level = min(1.0, self.charge_level + dt * 2.8)
+            pulse = 1.0 + 0.3 * math.sin(self.charge_level * 18.0)
+            self.scale = self.base_scale * (1.0 + 0.45 * self.charge_level) * pulse
+            self.color = [0.92, 0.98, 1.0, 1.0] # Luminous energetic white
+            self.trail.append(self.world_pos.copy())
+            if len(self.trail) > self.max_trail_len:
+                self.trail.pop(0)
+            return
+
+        # Decay charge when released
+        if self.charge_level > 0.0:
+            self.charge_level = max(0.0, self.charge_level - dt * 1.5)
+            # Interpolate back to base color
+            c_blend = self.charge_level
+            self.color = [
+                self.base_color[0] * (1.0 - c_blend) + 0.95 * c_blend,
+                self.base_color[1] * (1.0 - c_blend) + 0.98 * c_blend,
+                self.base_color[2] * (1.0 - c_blend) + 1.0 * c_blend,
+                self.base_color[3]
+            ]
+            self.scale = self.base_scale * (1.0 + 0.3 * self.charge_level)
+        else:
+            self.color = list(self.base_color)
+            self.scale = self.base_scale
+
+        # 2. Orbital Phase & Speed Dynamics
         speed_mult = 1.0
         if mode == settings.MODE_CHAOS:
             speed_mult = 2.4
         elif mode == settings.MODE_SINGULARITY:
-            speed_mult = 3.5
+            speed_mult = 3.6
 
-        if not self.grabbed:
-            self.theta = (self.theta + self.orbital_speed * speed_mult * dt) % (2.0 * math.pi)
-
-        # 2. Update Self Rotation
-        for i in range(3):
-            self.rot_angles[i] = (self.rot_angles[i] + self.rot_speeds[i] * dt) % 360.0
+        self.theta = (self.theta + self.orbital_speed * speed_mult * dt) % (2.0 * math.pi)
 
         # 3. Dynamic Radius with Eccentricity & Gestural Scaling
         ecc = self.eccentricity
