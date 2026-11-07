@@ -93,17 +93,31 @@ class PhantomApplication:
         self.clock = pygame.time.Clock()
         self.running = True
         self.fps = 60.0
+        print("[PHANTOM] Application fully initialized and entering main loop.")
+
+    def _ensure_window_visible(self):
+        try:
+            wm_info = pygame.display.get_wm_info()
+            if "window" in wm_info:
+                hwnd = wm_info["window"]
+                user32 = ctypes.windll.user32
+                user32.ShowWindow(hwnd, 5) # SW_SHOW
+                user32.SetForegroundWindow(hwnd)
+        except Exception as e:
+            print(f"[PHANTOM] Note on window manager: {e}")
 
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == QUIT:
+                print("[PHANTOM] Window close requested — exiting cleanly.")
                 self.running = False
 
             elif event.type == VIDEORESIZE:
-                self.width, self.height = event.w, event.h
-                self.screen = pygame.display.set_mode((self.width, self.height), self.flags)
-                self.renderer.set_viewport(self.width, self.height)
-                self.hud.set_viewport(self.width, self.height)
+                new_w, new_h = max(1, event.w), max(1, event.h)
+                if new_w != self.width or new_h != self.height:
+                    self.width, self.height = new_w, new_h
+                    self.renderer.set_viewport(self.width, self.height)
+                    self.hud.set_viewport(self.width, self.height)
 
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
