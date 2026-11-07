@@ -246,13 +246,13 @@ class PhantomApplication:
         )
         self.renderer.render_orbital_bodies(self.orbital_system)
 
-        # 4. Energy Shockwaves
+        # 5. Expanding 3D Shockwaves
         self.renderer.render_shockwaves(self.energy_effects)
 
-        # 5. Glowing Particle Cloud
+        # 6. Glowing Particle Cloud (Orbital dust + Relativistic Accretion Disk + Polar Jets)
         self.renderer.render_particles(self.particle_system)
 
-        # 6. Scientific Telemetry HUD Overlay
+        # 7. Scientific Telemetry HUD Overlay
         self.hud.render(
             fps=self.fps,
             camera_status=self.camera.is_active,
