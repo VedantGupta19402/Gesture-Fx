@@ -277,14 +277,26 @@ class PhantomApplication:
                 hands, body_origin, origin_mode, warp_fields = self.update_physics(dt)
                 self.render_scene(hands, body_origin, origin_mode, warp_fields)
 
-            frame_count += 1
-            if max_frames and frame_count >= max_frames:
-                break
-
-        self.cleanup()
+                frame_count += 1
+                if max_frames and frame_count >= max_frames:
+                    break
+        except Exception as e:
+            print(f"[PHANTOM CRITICAL RUNTIME ERROR]: {e}")
+            traceback.print_exc()
+        finally:
+            self.cleanup()
 
     def cleanup(self):
         print("[PHANTOM] Terminating application & releasing optical hardware...")
-        self.camera.release()
-        pygame.quit()
-
+        try:
+            self.tracker.cleanup()
+        except Exception:
+            pass
+        try:
+            self.camera.release()
+        except Exception:
+            pass
+        try:
+            pygame.quit()
+        except Exception:
+            pass
