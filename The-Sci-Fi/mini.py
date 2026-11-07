@@ -1,3 +1,35 @@
+"""
+====================================================================
+PHANTOM // ORBITAL MODE
+Autonomous Spatial Holographic Computing System
+(Preserves backwards compatibility with original prototype via --classic)
+====================================================================
+"""
+
+import sys
+import os
+
+# Add workspace root to sys.path so phantom modules resolve cleanly
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+if "--classic" not in sys.argv:
+    try:
+        from core.application import PhantomApplication
+        print("""
+        ==========================================================
+        * LAUNCHING PHANTOM // ORBITAL MODE
+        * Pass --classic to run legacy 4x4x4 particle grid demo.
+        ==========================================================
+        """)
+        app = PhantomApplication()
+        app.run()
+        sys.exit(0)
+    except Exception as e:
+        print(f"[PHANTOM] Launching classic fallback due to: {e}")
+
+# ==================== CLASSIC PROTOTYPE ====================
 import cv2
 import mediapipe as mp
 import pygame
@@ -60,10 +92,6 @@ def draw_sphere(pos, r=0.25):
     glPopMatrix()
 
 def two_fingers_up(hand):
-    """
-    Returns True if exactly index + middle fingers are up,
-    and ring + pinky are down
-    """
     index_up = hand.landmark[8].y < hand.landmark[6].y
     middle_up = hand.landmark[12].y < hand.landmark[10].y
     ring_down = hand.landmark[16].y > hand.landmark[14].y
@@ -79,6 +107,8 @@ while True:
             quit()
 
     ret, frame = cap.read()
+    if not ret:
+        break
     frame = cv2.flip(frame, 1)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hands.process(rgb)
