@@ -96,13 +96,30 @@ class GeometryVault:
         glNewList(self.dl_ico_edges, GL_COMPILE)
         glBegin(GL_LINES)
         for i1, i2 in self.ico_edges:
-            v1 = self.ico_verts[i1] * scale
-            v2 = self.ico_verts[i2] * scale
+            v1 = self.ico_verts[i1]
+            v2 = self.ico_verts[i2]
             glVertex3f(v1[0], v1[1], v1[2])
             glVertex3f(v2[0], v2[1], v2[2])
         glEnd()
+        glEndList()
 
-    def draw_octahedron(self, scale=1.0):
+        # 3. Icosahedron Faces
+        self.dl_ico_faces = glGenLists(1)
+        glNewList(self.dl_ico_faces, GL_COMPILE)
+        glBegin(GL_TRIANGLES)
+        for f in self.ico_faces:
+            v0 = self.ico_verts[f[0]]
+            v1 = self.ico_verts[f[1]]
+            v2 = self.ico_verts[f[2]]
+            glVertex3f(v0[0], v0[1], v0[2])
+            glVertex3f(v1[0], v1[1], v1[2])
+            glVertex3f(v2[0], v2[1], v2[2])
+        glEnd()
+        glEndList()
+
+        # 4. Octahedron
+        self.dl_octa = glGenLists(1)
+        glNewList(self.dl_octa, GL_COMPILE)
         glBegin(GL_LINES)
         for i1, i2 in self.octa_edges:
             v1 = self.octa_verts[i1] * scale
