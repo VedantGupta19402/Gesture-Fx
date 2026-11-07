@@ -117,19 +117,16 @@ while True:
         for hand, handed in zip(result.multi_hand_landmarks, result.multi_handedness):
             label = handed.classification[0].label
 
-            # ----- RIGHT HAND → SCALE (UNCHANGED) -----
             if label == "Right":
                 d = distance(hand.landmark[4], hand.landmark[8])
                 scale_target = max(0.8, min(d * 8, 4))
 
-            # ----- LEFT HAND → ROTATION (ONLY 2 FINGERS) -----
             if label == "Left":
                 if two_fingers_up(hand):
                     wrist = hand.landmark[0]
                     mid = hand.landmark[9]
                     rot_x_target = (mid.y - wrist.y) * 300
                     rot_y_target = (mid.x - wrist.x) * 300
-                # else → do nothing, rotation freezes
 
     # ---------- SMOOTHING ----------
     scale = lerp(scale, scale_target)
