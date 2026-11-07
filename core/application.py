@@ -211,18 +211,19 @@ class PhantomApplication:
             dual_gesture=dual_gesture
         )
 
-        # 5. Vectorized Particle Physics
+        # 6. Vectorized Particle Physics (Gravitational Lensing, Accretion, Jets & Warps)
         self.particle_system.update(
             dt=dt,
-            center_pos=self.orbital_system.smoothed_center,
-            hand_pos=primary_pos if (primary_hand and primary_hand.is_present) else None,
+            center_pos=body_origin,
+            warp_fields=warp_fields,
+            hand_pos=primary_hand.palm_center_world if primary_hand else None,
             gesture=primary_gesture,
             shockwaves=self.energy_effects.shockwaves,
             mode=self.orbital_system.mode,
             field_scale=self.orbital_system.field_scale
         )
 
-        return hands
+        return hands, body_origin, origin_mode, warp_fields
 
     def render_scene(self, hands):
         self.renderer.begin_frame()
