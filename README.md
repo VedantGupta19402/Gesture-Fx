@@ -66,15 +66,15 @@ hand gestures/
 ├── config/
 │   └── settings.py             # Palette, physics constants, layer parameters
 ├── core/
-│   ├── application.py       # Application lifecycle controller
-│   └── camera.py            # Webcam capture wrapper
+│   ├── application.py          # Pygame lifecycle and master loop
+│   └── camera.py               # Optical capture & screen-to-world projection
 ├── tracking/
-│   ├── hand_tracker.py      # Landmark tracking & smoothing
-│   └── gesture_recognizer.py# Gesture classification engine
+│   ├── hand_tracker.py         # MediaPipe inference & EMA landmark smoothing
+│   └── gesture_recognizer.py   # Multi-frame gesture detection with hysteresis
 ├── simulation/
-│   ├── orbital_system.py    # Orbital mechanics
-│   ├── particle_system.py   # Vectorized particle physics
-│   └── energy_effects.py    # Shockwaves & core effects
+│   ├── orbital_system.py       # 3D celestial mechanics and tiered layers
+│   ├── particle_system.py      # Vectorized SIMD particle dynamics
+│   └── energy_effects.py       # Shockwave propagation and core dynamics
 ├── rendering/
 │   ├── geometry.py          # Primitive builders
 │   ├── materials.py         # Neon / glow materials
