@@ -122,14 +122,18 @@ class GeometryVault:
         glNewList(self.dl_octa, GL_COMPILE)
         glBegin(GL_LINES)
         for i1, i2 in self.octa_edges:
-            v1 = self.octa_verts[i1] * scale
-            v2 = self.octa_verts[i2] * scale
+            v1 = self.octa_verts[i1]
+            v2 = self.octa_verts[i2]
             glVertex3f(v1[0], v1[1], v1[2])
             glVertex3f(v2[0], v2[1], v2[2])
         glEnd()
+        glEndList()
 
-    def draw_torus(self, major_radius=1.0, minor_radius=0.12, rings=28, sides=10):
-        """Renders a parametric 3D torus ring with glowing wireframe segments."""
+        # 5. Unit Torus
+        self.dl_torus = glGenLists(1)
+        glNewList(self.dl_torus, GL_COMPILE)
+        rings = 20
+        sides = 6
         glBegin(GL_LINES)
         for i in range(rings):
             u1 = 2.0 * math.pi * i / rings
