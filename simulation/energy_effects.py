@@ -55,13 +55,24 @@ class EnergyEffectsManager:
         self.accretion_time = 0.0
 
     def trigger_shockwave(self, origin, normal=(0, 0, 1), color=settings.COLOR_CYAN):
-        # Prevent rapid redundant spamming
         self.shockwaves.append(Shockwave(origin=origin, normal=normal, color=color))
 
     def update(self, dt, core_pos, hand_velocity, is_fast_swipe, field_intensity=0.5):
-        self.pulse_phase += dt * (3.0 + field_intensity * 4.0)
-        self.core_rotation_1 = (self.core_rotation_1 + dt * 45.0 * (1.0 + field_intensity)) % 360.0
-        self.core_rotation_2 = (self.core_rotation_2 - dt * 65.0 * (1.0 + field_intensity)) % 360.0
+        speed_factor = 1.0 + field_intensity * 1.5
+        self.pulse_phase += dt * (3.0 * speed_factor)
+        self.accretion_time += dt
+
+        # Update counter-rotating icosahedrons
+        self.core_rot_ico_1 = (self.core_rot_ico_1 + dt * 42.0 * speed_factor) % 360.0
+        self.core_rot_ico_2 = (self.core_rot_ico_2 - dt * 68.0 * speed_factor) % 360.0
+
+        # Update orthogonal gimbal torus rings
+        self.gimbal_torus_1 = (self.gimbal_torus_1 + dt * 30.0 * speed_factor) % 360.0
+        self.gimbal_torus_2 = (self.gimbal_torus_2 - dt * 48.0 * speed_factor) % 360.0
+
+        # Update pulsating energy shells
+        for i in range(len(self.shell_phases)):
+            self.shell_phases[i] = (self.shell_phases[i] + dt * 1.8 * speed_factor) % (math.pi * 2.0)
 
         # Trigger shockwave on sudden high velocity gesture
         if is_fast_swipe and (len(self.shockwaves) == 0 or self.shockwaves[-1].radius > 1.8):
@@ -77,4 +88,3 @@ class EnergyEffectsManager:
         for sw in self.shockwaves:
             sw.update(dt)
         self.shockwaves = [sw for sw in self.shockwaves if sw.is_alive]
-
