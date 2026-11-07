@@ -59,12 +59,12 @@
 
 ## 🛠️ Repository Architecture
 
-```
+```text
 hand gestures/
-├── main.py                  # PHANTOM entry point
-├── requirements.txt
+├── main.py                     # Primary entry point
+├── requirements.txt            # System dependencies
 ├── config/
-│   └── settings.py          # Global configuration & design system
+│   └── settings.py             # Palette, physics constants, layer parameters
 ├── core/
 │   ├── application.py       # Application lifecycle controller
 │   └── camera.py            # Webcam capture wrapper
