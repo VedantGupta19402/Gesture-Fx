@@ -75,18 +75,19 @@ class MasterRenderer:
         glRotatef(self.cam_rot_y, 0.0, 1.0, 0.0)
 
     def render_starfield(self):
-        """Draws subtle distant quantum points to establish spatial depth."""
         self.materials.set_additive_glow()
         glPointSize(1.5)
-        glBegin(GL_POINTS)
-        for i in range(len(self.stars_pos)):
-            b = self.stars_brightness[i]
-            glColor4f(0.5, 0.8, 1.0, b)
-            glVertex3fv(self.stars_pos[i])
-        glEnd()
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glVertexPointer(3, GL_FLOAT, 0, self.stars_pos)
+        glColor4f(0.5, 0.8, 1.0, 0.35)
+        glDrawArrays(GL_POINTS, 0, len(self.stars_pos))
+        glDisableClientState(GL_VERTEX_ARRAY)
 
-    def render_grid_plane(self):
-        """Draws a subtle holographic floor coordinate grid."""
+    def render_grid_plane(self, center_singularity):
+        """
+        Draws the holographic floor grid with gravitational curvature
+        deflection bending towards the virtual singularity.
+        """
         self.materials.set_additive_glow()
         glColor4fv(settings.COLOR_GRID)
         glLineWidth(1.0)
@@ -95,6 +96,9 @@ class MasterRenderer:
         grid_range = 10.0
         step = 1.0
         
+        # Gravitational bending helper
+        cx, cz = center_singularity[0], center_singularity[2]
+
         glBegin(GL_LINES)
         curr = -grid_range
         while curr <= grid_range:
