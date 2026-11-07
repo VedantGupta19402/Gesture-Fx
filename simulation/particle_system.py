@@ -120,46 +120,116 @@ class ParticleSystem:
         target_y = center_pos[1] + (x_plane * sin_z + y1 * cos_z)
         target_z = center_pos[2] + z1
 
-        targets = np.stack([target_x, target_y, target_z], axis=1)
+        orb_targets = np.stack([target_x, target_y, target_z], axis=1)
 
-        # 3. Mode Physics Dynamics
-        if mode == settings.MODE_ORBITAL:
-            # Particles smoothly converge towards their orbital equilibrium
-            to_target = targets - self.positions
-            self.velocities += to_target * (dt * 4.2)
-            self.velocities *= 0.88  # High damping for elegant orbital stability
-            self.positions += self.velocities * dt
+        # Orbital velocity integration
+        to_target = orb_targets - self.positions[:self.orbital_count]
+        self.velocities[:self.orbital_count] += to_target * (dt * 4.2)
+        self.velocities[:self.orbital_count] *= 0.88
+        self.positions[:self.orbital_count] += self.velocities[:self.orbital_count] * dt
 
-        elif mode == settings.MODE_CHAOS:
-            # Disintegration: High turbulent curl noise and centrifugal expansion
-            noise_x = np.sin(self.positions[:, 1] * 1.5 + self.time * 2.0)
-            noise_y = np.cos(self.positions[:, 2] * 1.5 + self.time * 2.0)
-            noise_z = np.sin(self.positions[:, 0] * 1.5 + self.time * 2.0)
-            curl_noise = np.stack([noise_x, noise_y, noise_z], axis=1) * 3.5
-            
-            # Repel from center outwards
-            diff_from_center = self.positions - center_pos
-            dist_c = np.linalg.norm(diff_from_center, axis=1, keepdims=True) + 0.1
-            outward_force = (diff_from_center / dist_c) * 4.0
+        # -------------------------------------------------------------
+        # 2. ACCRETION DISK DYNAMICS (Keplerian differential rotation + Doppler)
+        # -------------------------------------------------------------
+        a_start = self.orbital_count
+        a_end = a_start + self.accretion_count
+        
+        self.acc_angles = (self.acc_angles + self.acc_speeds * dt) % (2.0 * math.pi)
+        tilt = settings.ACCRETION_DISK_TILT
+        cos_tilt = math.cos(tilt)
+        sin_tilt = math.sin(tilt)
 
-            self.velocities += (curl_noise + outward_force) * dt
-            self.velocities *= 0.94
-            self.positions += self.velocities * dt
+        # Accretion ring coordinates with tilt
+        acc_x = self.acc_radii * np.cos(self.acc_angles)
+        acc_y_flat = np.sin(self.acc_angles * 3.0 + self.time * 2.0) * 0.04
+        acc_z_flat = self.acc_radii * np.sin(self.acc_angles)
 
-        elif mode == settings.MODE_SINGULARITY:
-            # Gravitational vortex towards interaction center
-            diff_from_focal = center_pos - self.positions
-            dist_f = np.linalg.norm(diff_from_focal, axis=1, keepdims=True) + 0.05
-            vortex_tangent = np.cross(diff_from_focal, np.array([0, 1, 0]))
-            
-            grav_force = (diff_from_focal / dist_f) * (18.0 / np.clip(dist_f, 0.4, 10.0))
-            self.velocities += (grav_force + vortex_tangent * 2.5) * dt
-            self.velocities *= 0.85
-            self.positions += self.velocities * dt
+        # Apply tilt
+        acc_y = acc_y_flat * cos_tilt - acc_z_flat * sin_tilt
+        acc_z = acc_y_flat * sin_tilt + acc_z_flat * cos_tilt
 
-        # 4. Hand Proximity & Gestural Forces
+        acc_target = np.stack([
+            center_pos[0] + acc_x,
+            center_pos[1] + acc_y,
+            center_pos[2] + acc_z
+        ], axis=1)
+
+        # Direct tracking with high coherence for smooth luminous disk
+        self.positions[a_start:a_end] += (acc_target - self.positions[a_start:a_end]) * min(1.0, dt * 14.0)
+
+        # Update Doppler Beaming color: approaching side (cos > 0) is shifted to intense white/cyan
+        doppler = 0.5 + 0.5 * np.cos(self.acc_angles)
+        self.colors[a_start:a_end, 0] = doppler * 0.85
+        self.colors[a_start:a_end, 1] = 0.65 + doppler * 0.34
+        self.colors[a_start:a_end, 2] = 1.0
+        self.colors[a_start:a_end, 3] = 0.35 + doppler * 0.55
+
+        # -------------------------------------------------------------
+        # 3. POLAR ASTROPHYSICAL JET DYNAMICS
+        # -------------------------------------------------------------
+        j_start = a_end
+        self.jet_dist += self.jet_speeds * dt
+        # Reset particles that exceed max distance
+        jet_reset_mask = self.jet_dist > 5.2
+        if np.any(jet_reset_mask):
+            self.jet_dist[jet_reset_mask] = np.random.uniform(0.1, 0.4, size=np.sum(jet_reset_mask))
+
+        spiral_theta = self.jet_angles + self.jet_dist * 2.4
+        spiral_r = 0.08 + self.jet_dist * 0.06 # Gentle collimation opening
+
+        jet_x = center_pos[0] + spiral_r * np.cos(spiral_theta)
+        jet_y = center_pos[1] + self.jet_polar_dir * self.jet_dist
+        jet_z = center_pos[2] + spiral_r * np.sin(spiral_theta)
+
+        jet_target = np.stack([jet_x, jet_y, jet_z], axis=1)
+        self.positions[j_start:] = jet_target
+        # Fade alpha as jet propagates outward
+        self.colors[j_start:, 3] = np.clip(1.0 - (self.jet_dist / 5.2) ** 1.5, 0.1, 0.95)
+
+        # -------------------------------------------------------------
+        # 4. GRAVITATIONAL LENSING & SINGULARITY DEFLECTION
+        # -------------------------------------------------------------
+        # Apply Schwarzschild geodesic bending to all orbital particles
+        disp_sing = center_pos - self.positions[:self.orbital_count]
+        dist_sing = np.linalg.norm(disp_sing, axis=1, keepdims=True) + 0.01
+
+        # Deflect trajectories toward photon ring
+        lensing_pull = (disp_sing / dist_sing) * (settings.LENSING_STRENGTH * 3.5 / (np.power(dist_sing, 2.0) + 0.35))
+        self.velocities[:self.orbital_count] += lensing_pull * dt
+
+        # -------------------------------------------------------------
+        # 5. DUAL-HAND 3D SPATIAL WARP FIELDS
+        # -------------------------------------------------------------
+        if warp_fields:
+            for wf in warp_fields:
+                w_pos = wf["pos"]
+                w_vel = wf["velocity"]
+                w_rad = wf["radius"]
+                w_int = wf["intensity"]
+
+                disp_w = self.positions[:self.orbital_count] - w_pos
+                dist_w = np.linalg.norm(disp_w, axis=1, keepdims=True) + 0.01
+
+                in_warp = (dist_w < w_rad).flatten()
+                if np.any(in_warp):
+                    sub_disp = disp_w[in_warp]
+                    sub_dist = dist_w[in_warp]
+                    norm_disp = sub_disp / sub_dist
+
+                    # 1. Bow Shock Outward Deflection
+                    shock_force = norm_disp * (w_int * 6.5 / (sub_dist + 0.2))
+
+                    # 2. Frame-Dragging Vortex Swirl
+                    v_dir = w_vel / (np.linalg.norm(w_vel) + 0.01)
+                    swirl = np.cross(norm_disp, v_dir) * (settings.WARP_SWIRL_FACTOR * w_int)
+
+                    self.velocities[:self.orbital_count][in_warp] += (shock_force + swirl) * dt
+
+        # -------------------------------------------------------------
+        # 6. GESTURAL ATTRACTORS & SHOCKWAVES
+        # -------------------------------------------------------------
         if hand_pos is not None:
-            disp_hand = self.positions - hand_pos
+            disp_hand = self.positions[:self.orbital_count] - hand_pos
             dist_hand = np.linalg.norm(disp_hand, axis=1, keepdims=True) + 0.01
 
             # Closed Fist: Gravitational black hole suction towards fist
