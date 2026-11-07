@@ -225,12 +225,12 @@ class PhantomApplication:
 
         return hands, body_origin, origin_mode, warp_fields
 
-    def render_scene(self, hands):
+    def render_scene(self, hands, body_origin, origin_mode, warp_fields):
         self.renderer.begin_frame()
 
-        # 1. Atmospheric Quantum Starfield & Floor Grid
+        # 1. Distant Quantum Starfield & Gravitationally Bent Floor Grid
         self.renderer.render_starfield()
-        self.renderer.render_grid_plane()
+        self.renderer.render_grid_plane(body_origin)
 
         # 2. Hand Skeletons in 3D Space
         self.renderer.render_hand_skeletons(hands)
