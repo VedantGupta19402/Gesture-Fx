@@ -180,7 +180,6 @@ class PhantomApplication:
         # 3. Camera Perspective (Two-finger gesture on Left Hand)
         left_hand = hands.get("Left")
         if left_hand and left_hand.is_present and left_hand.gesture == settings.GESTURE_TWO_FINGERS:
-            # Map wrist-to-middle vector to subtle orbital scene rotation
             wrist = left_hand.raw_landmarks.landmark[0]
             mid = left_hand.raw_landmarks.landmark[9]
             target_rot_x = (mid.y - wrist.y) * 120.0
@@ -188,10 +187,11 @@ class PhantomApplication:
             self.renderer.cam_rot_x += (target_rot_x - self.renderer.cam_rot_x) * (dt * 3.5)
             self.renderer.cam_rot_y += (target_rot_y - self.renderer.cam_rot_y) * (dt * 3.5)
         else:
-            # Subtle gentle ambient perspective drift
             self.renderer.cam_rot_y += dt * 1.5
 
-        # 3. Energy Shockwave & Core Effects
+        # 4. Energy Shockwave & Core Effects
+        right_hand = hands.get("Right")
+        primary_hand = right_hand if (right_hand and right_hand.is_present) else left_hand
         vel = primary_hand.palm_velocity if primary_hand else np.zeros(3, dtype=np.float32)
         is_swipe = (primary_gesture == settings.GESTURE_SHOCKWAVE)
         self.energy_effects.update(
