@@ -34,7 +34,6 @@ class GeometryVault:
             (3, 9, 4), (3, 4, 2), (3, 2, 6), (3, 6, 8), (3, 8, 9),
             (4, 9, 5), (2, 4, 11), (6, 2, 10), (8, 6, 7), (9, 8, 1)
         ]
-        # Unique edges for wireframe rendering
         edges = set()
         for f in self.ico_faces:
             for i in range(3):
@@ -75,18 +74,14 @@ class GeometryVault:
             (2, 4), (4, 3), (3, 5), (5, 2)
         ]
 
-    def draw_sphere(self, radius=0.25, slices=14, stacks=14, wireframe=False):
-        if wireframe:
-            gluQuadricDrawStyle(self.quadric, GLU_LINE)
-        else:
-            gluQuadricDrawStyle(self.quadric, GLU_FILL)
-        gluSphere(self.quadric, radius, slices, stacks)
-
-    def draw_cube(self, scale=1.0, inner_cross=True):
+    def _compile_display_lists(self):
+        # 1. Cube
+        self.dl_cube = glGenLists(1)
+        glNewList(self.dl_cube, GL_COMPILE)
         glBegin(GL_LINES)
         for i1, i2 in self.cube_edges:
-            v1 = self.cube_verts[i1] * scale
-            v2 = self.cube_verts[i2] * scale
+            v1 = self.cube_verts[i1]
+            v2 = self.cube_verts[i2]
             glVertex3f(v1[0], v1[1], v1[2])
             glVertex3f(v2[0], v2[1], v2[2])
         if inner_cross:
