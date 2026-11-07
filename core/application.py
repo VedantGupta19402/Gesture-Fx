@@ -130,15 +130,16 @@ class PhantomApplication:
                     print("[PHANTOM] Activated CHAOS MODE.")
                     self.orbital_system.set_mode(settings.MODE_CHAOS)
                 elif event.key == K_3:
+                    print("[PHANTOM] Activated SINGULARITY MODE.")
                     self.orbital_system.set_mode(settings.MODE_SINGULARITY)
                 elif event.key == K_h:
                     self.hud.toggle_visibility()
                 elif event.key == K_r:
+                    print("[PHANTOM] Resetting simulation state.")
                     self.reset_simulation()
                 elif event.key == K_f:
                     self.toggle_fullscreen()
                 elif event.key == K_SPACE:
-                    # Trigger manual energy shockwave pulse
                     self.energy_effects.trigger_shockwave(
                         origin=self.orbital_system.smoothed_center,
                         color=settings.COLOR_WHITE
