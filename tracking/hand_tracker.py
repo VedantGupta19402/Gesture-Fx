@@ -177,12 +177,18 @@ class HandTracker:
                 is_pinching = (tracked.gesture == settings.GESTURE_PINCH or tracked.pinch_distance < settings.PINCH_THRESHOLD)
                 tracked.update_pinch_state(is_pinching, pinch_center_3d, dt)
 
-        # Mark absent hands
+                # Spatial warp intensity: scales with velocity and proximity
+                speed_factor = min(2.5, tracked.velocity_mag / 1.5)
+                tracked.warp_intensity = max(0.2, speed_factor)
+
+        # Handle absent hands
         for label, hand_obj in self.hands.items():
             if label not in present_labels:
                 hand_obj.is_present = False
                 hand_obj.gesture = settings.GESTURE_NONE
                 hand_obj.velocity_mag = 0.0
+                hand_obj.update_pinch_state(False, hand_obj.palm_center_world, dt)
+                hand_obj.warp_intensity = max(0.0, hand_obj.warp_intensity - dt * settings.WARP_DISSIPATION_RATE)
 
         self.active_count = len(present_labels)
 
@@ -190,6 +196,9 @@ class HandTracker:
         left_pos = self.hands["Left"].palm_center_world if self.hands["Left"].is_present else None
         right_pos = self.hands["Right"].palm_center_world if self.hands["Right"].is_present else None
         self.dual_hand_gesture = self.recognizer.update_dual_hands(left_pos, right_pos)
+
+        # 4. Body-Relative Dynamic Interaction Origin Solver
+        self._update_interaction_origin(dt)
 
         return self.hands
 
