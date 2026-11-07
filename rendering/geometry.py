@@ -286,17 +286,12 @@ class GeometryVault:
                 theta = 2.0 * math.pi * i / tick_count
                 cos_t = math.cos(theta)
                 sin_t = math.sin(theta)
-                x1 = (radius - tick_len) * cos_t
-                y1 = (radius - tick_len) * sin_t
-                x2 = (radius + tick_len) * cos_t
-                y2 = (radius + tick_len) * sin_t
-                glVertex3f(x1, y1, 0.0)
-                glVertex3f(x2, y2, 0.0)
+                glVertex3f((radius - tick_len) * cos_t, (radius - tick_len) * sin_t, 0.0)
+                glVertex3f((radius + tick_len) * cos_t, (radius + tick_len) * sin_t, 0.0)
             glEnd()
 
     def draw_celestial_bracket(self, radius=4.0, arc_degrees=45):
-        """Draws an open sci-fi HUD bracket arc with corner accents."""
-        segs = 16
+        segs = 12
         rad_start = -math.radians(arc_degrees / 2.0)
         rad_end = math.radians(arc_degrees / 2.0)
         step = (rad_end - rad_start) / segs
@@ -306,4 +301,3 @@ class GeometryVault:
             theta = rad_start + i * step
             glVertex3f(radius * math.cos(theta), radius * math.sin(theta), 0.0)
         glEnd()
-
