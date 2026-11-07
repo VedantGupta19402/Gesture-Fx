@@ -83,14 +83,22 @@ class ParticleSystem:
         self.positions[a_start:a_end, 1] = c_pos[1] + np.sin(self.acc_angles) * 0.12
         self.positions[a_start:a_end, 2] = c_pos[2] + self.acc_radii * np.sin(self.acc_angles)
 
-    def update(self, dt, center_pos, hand_pos=None, gesture=settings.GESTURE_NONE,
+        # Jets
+        j_start = a_end
+        self.positions[j_start:, 0] = c_pos[0]
+        self.positions[j_start:, 1] = c_pos[1] + self.jet_polar_dir * self.jet_dist
+        self.positions[j_start:, 2] = c_pos[2]
+
+    def update(self, dt, center_pos, warp_fields=None, hand_pos=None, gesture=settings.GESTURE_NONE,
                shockwaves=None, mode=settings.MODE_ORBITAL, field_scale=1.0):
         self.time += dt
         
-        # 1. Update Base Orbital Angles
-        speed_multiplier = 1.0
+        # -------------------------------------------------------------
+        # 1. ORBITAL CLOUD DYNAMICS
+        # -------------------------------------------------------------
+        orb_speed_mult = 1.0
         if mode == settings.MODE_CHAOS:
-            speed_multiplier = 3.0
+            orb_speed_mult = 2.6
         elif mode == settings.MODE_SINGULARITY:
             speed_multiplier = 4.5
 
