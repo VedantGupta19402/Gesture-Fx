@@ -107,18 +107,15 @@ class ParticleSystem:
         if mode == settings.MODE_SINGULARITY:
             radii = radii * 0.20 + np.sin(self.time * 6.0 + self.orb_angles) * 0.14
 
-        x_plane = radii * np.cos(self.orbit_angles)
-        y_plane = np.sin(self.orbit_angles * self.orbit_wobble_freq + self.time) * 0.35
-        z_plane = radii * np.sin(self.orbit_angles)
+        x_plane = radii * np.cos(self.orb_angles)
+        y_plane = np.sin(self.orb_angles * self.orb_wobble_freq + self.time) * 0.35
+        z_plane = radii * np.sin(self.orb_angles)
 
-        # Apply inclinations
-        cos_x = np.cos(self.orbit_tilt_x)
-        sin_x = np.sin(self.orbit_tilt_x)
+        cos_x, sin_x = np.cos(self.orb_tilt_x), np.sin(self.orb_tilt_x)
         y1 = y_plane * cos_x - z_plane * sin_x
         z1 = y_plane * sin_x + z_plane * cos_x
 
-        cos_z = np.cos(self.orbit_tilt_z)
-        sin_z = np.sin(self.orbit_tilt_z)
+        cos_z, sin_z = np.cos(self.orb_tilt_z), np.sin(self.orb_tilt_z)
         target_x = center_pos[0] + (x_plane * cos_z - y1 * sin_z)
         target_y = center_pos[1] + (x_plane * sin_z + y1 * cos_z)
         target_z = center_pos[2] + z1
