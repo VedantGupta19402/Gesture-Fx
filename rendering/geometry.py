@@ -156,18 +156,129 @@ class GeometryVault:
         glEnd()
         glEndList()
 
-    def draw_orbital_ring(self, radius=5.0, segments=64, tick_count=16):
-        """Draws a smooth circular orbital track with scientific calibration tick marks."""
-        # Ring loop
+        # 6. Photon Ring (Unit)
+        self.dl_photon_ring = glGenLists(1)
+        glNewList(self.dl_photon_ring, GL_COMPILE)
+        glBegin(GL_LINE_LOOP)
+        for s in range(48):
+            th = 2.0 * math.pi * s / 48
+            glVertex3f(math.cos(th), math.sin(th), 0.0)
+        glEnd()
+        glEndList()
+
+    def draw_sphere(self, radius=0.25, slices=12, stacks=12, wireframe=False):
+        if wireframe:
+            gluQuadricDrawStyle(self.quadric, GLU_LINE)
+        else:
+            gluQuadricDrawStyle(self.quadric, GLU_FILL)
+        gluSphere(self.quadric, radius, slices, stacks)
+
+    def draw_event_horizon(self, radius=0.36):
+        gluQuadricDrawStyle(self.quadric, GLU_FILL)
+        gluSphere(self.quadric, radius, 16, 16)
+
+    def draw_photon_ring(self, radius=0.54, segments=48):
+        glPushMatrix()
+        glScalef(radius, radius, radius)
+        glCallList(self.dl_photon_ring)
+        glPopMatrix()
+
+    def draw_accretion_disk(self, inner_r=0.75, outer_r=2.45, time_val=0.0):
+        ring_count = 3
+        segments = 32
+        dr = (outer_r - inner_r) / float(ring_count)
+
+        for ring_idx in range(ring_count):
+            r1 = inner_r + ring_idx * dr
+            r2 = r1 + dr * 0.82
+            kepler_speed = (inner_r / r1) ** 1.5
+            ring_phase = time_val * kepler_speed * 1.8
+
+            glBegin(GL_LINES)
+            for s in range(segments):
+                theta1 = (2.0 * math.pi * s / segments) + ring_phase
+                theta2 = (2.0 * math.pi * (s + 0.5) / segments) + ring_phase
+
+                doppler_factor = 0.5 + 0.5 * math.cos(theta1)
+                alpha = (0.20 + 0.60 * doppler_factor) * (1.0 - (ring_idx / ring_count) * 0.40)
+                
+                r_col = 0.0 + doppler_factor * 0.95
+                g_col = 0.6 + doppler_factor * 0.38
+                glColor4f(r_col, g_col, 1.0, alpha)
+
+                glVertex3f(r1 * math.cos(theta1), r1 * math.sin(theta1), 0.0)
+                glVertex3f(r2 * math.cos(theta2), r2 * math.sin(theta2), 0.0)
+            glEnd()
+
+    def draw_pulsating_shell(self, radius=1.0, alpha=0.35):
+        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], alpha)
+        glPushMatrix()
+        glScalef(radius, radius, radius)
+        glCallList(self.dl_ico_edges)
+        glPopMatrix()
+
+    def draw_warp_bubble(self, radius=1.4, intensity=1.0):
+        segs = 20
+        glColor4f(settings.COLOR_CYAN[0], settings.COLOR_CYAN[1], settings.COLOR_CYAN[2], 0.22 * intensity)
+        for tilt_axis in [0, 1, 2]:
+            glBegin(GL_LINE_LOOP)
+            for i in range(segs):
+                theta = 2.0 * math.pi * i / segs
+                c, s = radius * math.cos(theta), radius * math.sin(theta)
+                if tilt_axis == 0:
+                    glVertex3f(c, s, 0.0)
+                elif tilt_axis == 1:
+                    glVertex3f(c, 0.0, s)
+                else:
+                    glVertex3f(0.0, c, s)
+            glEnd()
+
+    def draw_energy_beam(self, p1, p2, color=settings.COLOR_WHITE, jitter=0.06):
+        segments = 5
+        glBegin(GL_LINE_STRIP)
+        glColor4fv(color)
+        glVertex3fv(p1)
+        for i in range(1, segments):
+            t = i / float(segments)
+            mid = p1 + (p2 - p1) * t
+            noise = np.random.uniform(-jitter, jitter, size=3).astype(np.float32)
+            glVertex3fv(mid + noise)
+        glVertex3fv(p2)
+        glEnd()
+
+    def draw_cube(self, scale=1.0, inner_cross=True):
+        glPushMatrix()
+        glScalef(scale, scale, scale)
+        glCallList(self.dl_cube)
+        glPopMatrix()
+
+    def draw_icosahedron(self, scale=1.0, show_faces=True):
+        glPushMatrix()
+        glScalef(scale, scale, scale)
+        if show_faces:
+            glCallList(self.dl_ico_faces)
+        glCallList(self.dl_ico_edges)
+        glPopMatrix()
+
+    def draw_octahedron(self, scale=1.0):
+        glPushMatrix()
+        glScalef(scale, scale, scale)
+        glCallList(self.dl_octa)
+        glPopMatrix()
+
+    def draw_torus(self, major_radius=1.0, minor_radius=0.12, rings=20, sides=6):
+        glPushMatrix()
+        glScalef(major_radius, major_radius, major_radius)
+        glCallList(self.dl_torus)
+        glPopMatrix()
+
+    def draw_orbital_ring(self, radius=5.0, segments=48, tick_count=12):
         glBegin(GL_LINE_LOOP)
         for i in range(segments):
             theta = 2.0 * math.pi * i / segments
-            x = radius * math.cos(theta)
-            y = radius * math.sin(theta)
-            glVertex3f(x, y, 0.0)
+            glVertex3f(radius * math.cos(theta), radius * math.sin(theta), 0.0)
         glEnd()
 
-        # Calibration tick marks
         if tick_count > 0:
             glBegin(GL_LINES)
             tick_len = radius * 0.05
