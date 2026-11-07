@@ -34,14 +34,13 @@ class MasterRenderer:
         self.cam_rot_y = 0.0
         self.cam_zoom = -8.5
         
-        # Distant quantum starfield for atmospheric depth
+        # Distant quantum starfield
         self._init_quantum_starfield()
         self.init_gl()
 
     def _init_quantum_starfield(self):
-        count = 300
+        count = 320
         self.stars_pos = np.random.uniform(-18.0, 18.0, size=(count, 3)).astype(np.float32)
-        # Deep z range: -30 to -5
         self.stars_pos[:, 2] = np.random.uniform(-35.0, -10.0, size=count)
         self.stars_brightness = np.random.uniform(0.12, 0.45, size=count).astype(np.float32)
 
