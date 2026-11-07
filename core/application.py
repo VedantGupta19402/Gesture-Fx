@@ -196,17 +196,18 @@ class PhantomApplication:
         is_swipe = (primary_gesture == settings.GESTURE_SHOCKWAVE)
         self.energy_effects.update(
             dt=dt,
-            core_pos=self.orbital_system.smoothed_center,
+            core_pos=body_origin,
             hand_velocity=vel,
             is_fast_swipe=is_swipe,
             field_intensity=self.orbital_system.field_intensity
         )
 
-        # 4. 3D Orbital Mechanics Simulation
+        # 5. Celestial Orbital Mechanics & Pinch-to-Launch Physics
         self.orbital_system.update(
             dt=dt,
-            primary_hand_pos=primary_pos if (primary_hand and primary_hand.is_present) else None,
-            gesture=primary_gesture,
+            body_origin=body_origin,
+            hands_dict=hands,
+            warp_fields=warp_fields,
             dual_gesture=dual_gesture
         )
 
